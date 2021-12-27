@@ -1,0 +1,82 @@
+<div class="container">
+	<div class="row">
+		<div class="col">
+
+			<h5 class="mt-5 text-center">TreeGrid Demo</h5>
+			<div class="e-resizable mt-5">
+				<div style="text-align: end;">
+					<button id='add' class="btn btn mb-2 flot-right" style="background: #80808087;" (click)='onClick()'>Add New Column</button>
+				</div>
+				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (rowSelected)='rowSelected($event)' (rowDeselected)='rowDeselected($event)' (toolbarClick)='toolbarClick($event)' [toolbar]='toolbarOption' [treeColumnIndex]="5"
+					[sortSettings]="sortSettings" [allowFiltering]="true" [allowSorting]="true" childMapping="subtasks"
+					[allowPaging]="true" [pageSettings]="pageSettings" [filterSettings]="filterSettings"
+					[allowResizing]='true' [allowReordering]='true' [allowRowDragAndDrop]='true' [allowSelection]='true' 
+					[selectionSettings]='selectionOptions' [contextMenuItems]='contextMenuItems' [editSettings]='editSettings'
+					height='400' width='100%' (contextMenuClick)='contextMenuClick($event)'
+					(contextMenuOpen)='contextMenuOpen($event)' (queryCellInfo)='customizeCell($event)'>
+					<e-columns>
+						<!-- <ng-template #colsTemplate  ngFor let-column [ngForOf]="columns">
+							<e-column [field]="column.field"  [headerText]="column.headerText" textAlign="Center" width="170">        
+						   </e-column>
+					  </ng-template> -->
+						<e-column *ngFor="let column of columns" [field]="column.field" [headerText]="column.headerText"
+							[width]="column.width" [visible]="column.visble === true" [format]='column.format'
+							headerTextAlign='center' textAlign='center'></e-column>
+						<!-- <e-column field="taskID" headerText="Task Id" textAlign="Center" width="170"></e-column>
+						<e-column field="taskName" headerText="Task Name" textAlign="Center" width="170"></e-column>
+						<e-column field="startDate" headerText="Start Date" textAlign="Center" format="yMd" width="170">
+						</e-column>
+						<e-column field="duration" headerText="Duration" textAlign="Center" width="170"></e-column> -->
+					</e-columns>
+				</ejs-treegrid>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Change column header Text</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<label for="exampleFormControlInput1" class="form-label">Header Text</label>
+					<input type="text" class="form-control" id="exampleFormControlInput1" [(ngModel)]="changeHeader"
+						name="changeHeader">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="submit" class="btn btn-primary" (click)="click()">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="exampleModalAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Add New Column</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<label for="exampleFormControlInput1" class="form-label">Column Name</label>
+					<input type="text" class="form-control" id="exampleFormControlInput1" [(ngModel)]="columnName"
+						name="columnName">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="submit" class="btn btn-primary" (click)="AddColumn()">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
