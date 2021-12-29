@@ -93,6 +93,59 @@ export class TrigreedComponent implements OnInit {
         text: 'Multi Sort',
         target: '.e-headercell',
         id: 'multisort'
+      },
+      {
+        text: 'Add Next',
+        target: '.e-content',
+        id: 'addnext'
+      },
+      {
+        text: 'Add Child',
+        target: '.e-content',
+        id: 'addchild'
+      },
+      {
+        separator: true,
+        target: '.e-content'
+      },
+      {
+        text: 'Delete Row',
+        target: '.e-content',
+        id: 'deleterow'
+      },
+      {
+        text: 'Edit Row',
+        target: '.e-content',
+        id: 'editrow'
+      },
+      {
+        text: 'Multi Select',
+        target: '.e-content',
+        id: 'multiselect'
+      },
+      {
+        separator: true,
+        target: '.e-content'
+      },
+      {
+        text: 'Copy Rows',
+        target: '.e-content',
+        id: 'copyrows'
+      },
+      {
+        text: 'Cut Rows',
+        target: '.e-content',
+        id: 'cutrows'
+      },
+      {
+        text: 'Paste Next',
+        target: '.e-content',
+        id: 'pastenext'
+      },
+      {
+        text: 'Paste Child',
+        target: '.e-content',
+        id: 'pastechild'
       }
     ]
     // this.contextMenuItems = [
