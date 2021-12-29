@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { AppComponent } from "./app.component";
-import { TreeGridModule,EditService } from "@syncfusion/ej2-angular-treegrid";
+import { TreeGridModule, EditService, TreeGridAllModule } from "@syncfusion/ej2-angular-treegrid";
 import {
   PageService,
   SortService,
@@ -12,12 +12,33 @@ import { LargedataComponent } from './largedata/largedata.component';
 import { HeaderComponent } from './header/header.component';
 import { AppRoutingModule } from "./app.routing";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { DropDownListAllModule } from '@syncfusion/ej2-angular-dropdowns';
+import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
+
 
 
 @NgModule({
-  declarations: [AppComponent, TrigreedComponent, LargedataComponent, HeaderComponent],
-  imports: [BrowserModule, TreeGridModule,AppRoutingModule,FormsModule,ReactiveFormsModule],
-  providers: [PageService, SortService, FilterService,EditService],
+  declarations: [
+    AppComponent,
+    TrigreedComponent,
+    LargedataComponent,
+    HeaderComponent
+  ],
+  imports: [
+    BrowserModule,
+    TreeGridModule,
+    TreeGridAllModule,
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DropDownListAllModule,
+    CheckBoxModule
+  ],
+  providers: [PageService,
+    SortService,
+    FilterService,
+    EditService,
+  ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

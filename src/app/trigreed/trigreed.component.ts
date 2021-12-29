@@ -1,10 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ToolbarItems, SelectionSettingsModel, SortSettingsModel, PageSettingsModel, EditSettingsModel, ResizeService, ContextMenuService, EditService, ExcelExportService, PageService, PdfExportService, ReorderService, RowDDService, SelectionService, SortService, ToolbarService, TreeGridComponent, FilterSettingsModel, Column } from '@syncfusion/ej2-angular-treegrid';
+import { ToolbarItems, SelectionSettingsModel, SortSettingsModel, PageSettingsModel, EditSettingsModel, ResizeService, ContextMenuService, EditService, ExcelExportService, PageService, PdfExportService, ReorderService, RowDDService, SelectionService, SortService, ToolbarService, TreeGridComponent, FilterSettingsModel, Column, FreezeService, ColumnChooserService, InfiniteScrollService, VirtualScrollService, ColumnMenuService } from '@syncfusion/ej2-angular-treegrid';
 import { sampleData } from '../datasource';
 import { MenuEventArgs } from '@syncfusion/ej2-navigations';
 import { getValue, isNullOrUndefined } from '@syncfusion/ej2-base';
 import { BeforeOpenCloseEventArgs } from '@syncfusion/ej2-inputs';
-import { GridComponent, QueryCellInfoEventArgs, RowDeselectEventArgs, RowSelectEventArgs } from '@syncfusion/ej2-angular-grids';
+import { GridComponent, QueryCellInfoEventArgs, RowDeselectEventArgs, RowSelectEventArgs, SortEventArgs } from '@syncfusion/ej2-angular-grids';
+import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
+import { DropDownList, ChangeEventArgs } from '@syncfusion/ej2-angular-dropdowns';
+import { CheckBoxComponent } from '@syncfusion/ej2-angular-buttons';
+
 
 declare var $: any;
 
@@ -12,7 +16,25 @@ declare var $: any;
   selector: 'app-trigreed',
   templateUrl: './trigreed.component.html',
   styleUrls: ['./trigreed.component.css'],
-  providers: [ResizeService, ReorderService, RowDDService, SelectionService, SortService, ResizeService, PageService, EditService, ExcelExportService, PdfExportService, ContextMenuService, ToolbarService]
+  providers: [
+    ResizeService,
+    ReorderService,
+    RowDDService,
+    SelectionService,
+    SortService,
+    ResizeService,
+    PageService,
+    EditService,
+    ExcelExportService,
+    PdfExportService,
+    ContextMenuService,
+    ToolbarService,
+    FreezeService,
+    ColumnChooserService,
+    InfiniteScrollService,
+    VirtualScrollService,
+    ColumnMenuService
+  ]
 })
 export class TrigreedComponent implements OnInit {
   public data: Object[];
@@ -22,47 +44,75 @@ export class TrigreedComponent implements OnInit {
   public contextMenuItems: Object[];
   public editSettings: EditSettingsModel;
   public editparams: Object;
-
   public datas: Object;
   public toolbarOption: string[];
   public selectionOptions: SelectionSettingsModel;
   @ViewChild('treeGridObj', { static: false })
+
   public treeGridObj: TreeGridComponent;
   public formatoption: Object;
-
   public columns: Object[];
-
   headerText: string;
   changeHeader: string;
   columnName: string;
-
   @ViewChild('grid', { static: false })
   gridObj: GridComponent;
-
   public flag = true;
   public newColumns;
   public newColourColumn: any = [];
-
   public copyObject: any = [];
   public cutObject: any = [];
   flagCut: boolean = true;
+  copyNewObj: any = [];
+  globleIndex: any;
 
-  copyNewObj:any = [];
-  globleIndex:any;
+  @ViewChild('dropdown1', { static: false })
+  public dropdown1: DropDownListComponent;
+  public templateOptions: object;
+  public dropDownFilter: DropDownList;
+  public d1data: Object;
+  public fields1: Object;
+
+  // ! Multi Sorting
+  @ViewChild('taskID', { static: false })
+  public taskID: CheckBoxComponent;
+  @ViewChild('taskName', { static: false })
+  public taskName: CheckBoxComponent;
+  @ViewChild('startDate', { static: false })
+  public startDate: CheckBoxComponent;
+  @ViewChild('duration', { static: false })
+  public duration: CheckBoxComponent;
+  @ViewChild('price', { static: false })
+  public price: CheckBoxComponent;
+
+  // ! Cell Alignment and other
+  public d2data: Object;
+  public d3data: Object;
+  public ddlfields: Object;
+  public fields: Object;
+  @ViewChild('dropdown2', { static: false })
+  public dropdown2: DropDownListComponent;
+  @ViewChild('dropdown3', { static: false })
+  public dropdown3: DropDownListComponent;
+  public customAttributes: Object;
+  treeGridobject: any = {};
 
   ngOnInit(): void {
     this.data = sampleData;
-    this.columns = [{ field: "taskID", headerText: 'Task Id', visble: true },
-    { field: "taskName", headerText: 'Task Name', visble: true },
-    { field: "startDate", headerText: 'Start Date', visble: true, format: 'yMd' },
-    { field: "duration", headerText: 'Duration', visble: true }];
-    this.toolbarOption = ['Search', 'Update', 'Cancel', 'Paste'];
+    this.customAttributes = { class: 'customcss' };
+    this.columns = [
+      { field: "taskID", headerText: 'Task Id', visble: true, isFrozen: true },
+      { field: "taskName", headerText: 'Task Name', visble: true, isFrozen: true },
+      { field: "startDate", headerText: 'Start Date', visble: true, format: 'yMd' },
+      { field: "duration", headerText: 'Duration', visble: true, filterbars: this.templateOptions }
+    ];
+    this.toolbarOption = ['ColumnChooser'];
     this.selectionOptions = { cellSelectionMode: 'Box', type: 'Multiple', mode: 'Row' };
     this.contextMenuItems = [
       {
         text: 'Edit Col',
         target: '.e-headercell',
-        id: 'editcolumn'
+        id: 'ranamecolumn'
       },
       {
         text: 'New Col',
@@ -74,7 +124,7 @@ export class TrigreedComponent implements OnInit {
         target: '.e-headercell',
         id: 'deletecolumn'
       }
-      ,{
+      , {
         text: 'Choose Col',
         target: '.e-headercell',
         id: 'selectcolumn'
@@ -93,7 +143,8 @@ export class TrigreedComponent implements OnInit {
         text: 'Multi Sort',
         target: '.e-headercell',
         id: 'multisort'
-      }
+      },
+      { text: 'Colour: Green', target: '.e-headercell', id: 'setColourgreen' },
     ]
     // this.contextMenuItems = [
     //   'AutoFit',
@@ -136,61 +187,131 @@ export class TrigreedComponent implements OnInit {
     // ];
     this.sortSettings = {
       columns: [
+        { field: "taskID", direction: "Ascending" },
         { field: "taskName", direction: "Ascending" },
-        { field: "taskID", direction: "Descending" }
       ]
     };
-    this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Batch',newRowPosition: 'Child' };
+    this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Batch', newRowPosition: 'Child' };
     this.editparams = { params: { format: 'n' } };
     this.pageSettings = { pageSize: 100 };
-    this.filterSettings = { type: 'Menu', ignoreAccent: true };
+    // this.filterSettings = { type: 'Menu', ignoreAccent: true };
     this.formatoption = { type: 'dateTime', format: 'dd/MM/yyyy hh:mm a' }
+    this.templateOptions = {
+      create: (args: { element: Element }) => {
+        let dd: HTMLInputElement = document.createElement('input');
+        dd.id = 'duration';
+        return dd;
+      },
+      write: (args: { element: Element }) => {
+        let dataSource: string[] = ['All', '1', '3', '4', '5', '6', '8', '9'];
+        this.dropDownFilter = new DropDownList({
+          dataSource: dataSource,
+          value: 'All',
+          change: (e: ChangeEventArgs) => {
+            let valuenum: any = +e.value;
+            let id: any = <string>this.dropDownFilter.element.id;
+            let value: any = <string>e.value;
+            if (value !== 'All') {
+              this.treeGridObj.filterByColumn(id, 'equal', valuenum);
+            } else {
+              this.treeGridObj.removeFilteredColsByField(id);
+            }
+          }
+        });
+        this.dropDownFilter.appendTo('#duration');
+      }
+    };
+    this.fields1 = { text: 'mode', value: 'id' };
+    this.d1data = [
+      { id: 'Parent', mode: 'Parent' },
+      { id: 'Child', mode: 'Child' },
+      { id: 'Both', mode: 'Both' },
+      { id: 'None', mode: 'None' },
+    ]
 
-    setTimeout(() => {
-      this.disable();
-      console.log("TreeGrid",this.toolbarOption)
-    }, 200)
+    this.ddlfields = { text: 'name', value: 'id' };
+    this.fields = { text: 'name', value: 'id' };
+
+    this.d2data = [
+      { id: 'taskID', name: 'Task ID' },
+      { id: 'taskName', name: 'Task Name' },
+      { id: 'startDate', name: 'Start Date' },
+      { id: 'duration', name: 'Duration' }
+    ],
+
+      this.d3data = [
+        { id: 'right', name: 'right' },
+        { id: 'left', name: 'left' },
+        { id: 'center', name: 'center' },
+        { id: 'justify', name: 'justify' }
+      ],
+
+      setTimeout(() => {
+        this.disable();
+        console.log("TreeGrid", this.toolbarOption)
+      }, 200)
   }
 
 
+  change(e: ChangeEventArgs): void {
+    let mode: any = <string>e.value;
+    this.treeGridObj.filterSettings.hierarchyMode = mode;
+    this.treeGridObj.clearFiltering();
+    this.dropDownFilter.value = 'All';
+  }
+
+  removed(args: any) {
+    this.gridObj.getColumnByField(args.itemData).isFrozen = false;
+    this.gridObj.refreshColumns();
+  }
+
+
+  select(args: any): void {
+    console.log("args", args)
+    if (this.gridObj.getColumns().length - 1 > this.gridObj.getFrozenColumns()) {
+      for (let i = 0; i < this.gridObj.getVisibleColumns().length; i++) {
+        if (args.itemData == this.gridObj.getVisibleColumns()[i].field) {
+          this.gridObj.getVisibleColumns()[i].isFrozen = true;
+        }
+      }
+      this.gridObj.refreshColumns();
+    } else {
+      args.cancel = true;
+    }
+  }
+
+
+
+
   contextMenuClick(args?: MenuEventArgs): void {
-    console.log("args",args);
     if (args.item['properties'].id == 'ranamecolumn') {
+      console.log("args", args)
       this.headerText = args['column'].field;
-      this.changeHeader = args['column'].headerText
+      this.changeHeader = args['column'].headerText;
+      args['rowInfo'].target.setAttribute('class', 'headerColumnStyle');
       $('#exampleModal').modal('show');
     } else if (args.item['properties'].id == 'deletecolumn') {
-      // this.treeGridObj.hideColumns(key:args['column'].field)
-      // this.columns = this.columns.filter(element => {
-      //   if (args['column'].headerText == element['headerText']) {
-      //     element['visble'] = false;
-
-      //   }
-      //   return this.columns;
-      // });
-      // this.data = this.columns
-      // this.treeGridObj.setProperties({
-      //   columnModel: this.columns
-      // }, false);
+      this.deleteColumnDialog();
+      this.treeGridobject.deleteField = args['column'].field
+      this.treeGridobject.deleteHeaderName = args['column'].headerText;
       this.treeGridObj.refresh();
       this.gridObj.refreshColumns();
     }
-
     else if (args.item['properties'].id == 'setColourgreen') {
       this.newColourColumn.push({
         fieldName: args['column'].field,
         colurs: 'green'
       });
+      console.log(this.newColourColumn)
       this.treeGridObj.refresh();
-      
-    } else if (args.item['properties'].id == 'setColourred') {
+    }
+    else if (args.item['properties'].id == 'setColourred') {
       this.newColourColumn.push({
         fieldName: args['column'].field,
         colurs: 'red'
       });
       this.treeGridObj.refresh();
     }
-
     else if (args.item['properties'].id == 'right') {
       this.newColourColumn.push({
         fieldName: args['column'].field,
@@ -198,32 +319,31 @@ export class TrigreedComponent implements OnInit {
       });
       this.treeGridObj.refresh();
     }
-
     else if (args.item['properties'].id == 'left') {
       this.newColourColumn.push({
         fieldName: args['column'].field,
         textAlign: "left"
       });
       this.treeGridObj.refresh();
-
-    } else if (args.item['properties'].id == 'copy') {
+    }
+    else if (args.item['properties'].id == 'copy') {
       this.flagCut = false;
       this.copyNewObj.push(args['rowInfo'].rowData['taskData']);
       this.treeGridObj.toolbarModule.enableItems(["_gridcontrol_Paste"], true);// enable toolbar items.
 
-    } else if (args.item['properties'].id == 'above') {
+    }
+    else if (args.item['properties'].id == 'above') {
       for (let data in this.copyNewObj) {
         this.treeGridObj.addRecord(this.copyNewObj[data], this.globleIndex, 'Top');
       }
-      this.treeGridObj.addRecord(this.copyNewObj,this.globleIndex, 'Top');
+      this.treeGridObj.addRecord(this.copyNewObj, this.globleIndex, 'Top');
       this.treeGridObj.toolbarModule.enableItems(["_gridcontrol_Paste"], true);
-
-      // this.treeGridObj.refresh();
-
-    } else if (args.item['properties'].id == 'below') {
+    }
+    else if (args.item['properties'].id == 'below') {
       this.treeGridObj.addRecord(this.copyNewObj, 0, 'Below');
 
-    } else if (args.item['properties'].id == 'child') {
+    }
+    else if (args.item['properties'].id == 'child') {
       this.treeGridObj.addRecord(this.copyNewObj, 0, 'Child');
 
     }
@@ -236,11 +356,24 @@ export class TrigreedComponent implements OnInit {
       this.treeGridObj.toolbarModule.enableItems(["_gridcontrol_Paste"], true);
 
     }
+    else if (args.item['properties'].id == 'addcolumn') {
+      this.onClick();
+    }
+    else if (args.item['properties'].id == 'freezecolumn') {
+    }
+    else if (args.item['properties'].id == 'filtercolumn') {
+      $('#filterModal').modal('show');
+    }
+    else if (args.item['properties'].id == 'multisort') {
+      $('#multisorting').modal('show');
+    }
   }
 
   contextMenuOpen(arg?: BeforeOpenCloseEventArgs): void {
 
   }
+
+  //! Edit column Save
 
   click() {
     if (this.changeHeader == null || this.changeHeader == '' || this.changeHeader == undefined) {
@@ -248,12 +381,34 @@ export class TrigreedComponent implements OnInit {
       return
     }
     const column = this.treeGridObj.getColumnByField(this.headerText);
+    console.log(column)
     column.headerText = this.changeHeader;
-    this.treeGridObj.refreshColumns();
+    // this.treeGridObj.refreshColumns();
+    setTimeout(() => {
+      this.stylingCell();
+    }, 500)
+
+    // this.treeGridObj.getColumnByField(this.headerText)s = alignment;
+    // console.log(this.treeGridObj.getColumnByField(columnName))
+
+
+    // args['rowInfo'].target.setAttribute('class', 'headerColumnStyle');
+
     $('#exampleModal').modal('hide');
   }
 
-  // custmize cell
+  // ! Set Style
+
+  stylingCell() {
+    $(".customcss").css({
+      "background-color": this.treeGridobject.columnColor,
+      "color": this.treeGridobject.columnColorText,
+      "font-size": this.treeGridobject.columnColorFontSize,
+      "text-align": this.treeGridobject.columnAlign
+    });
+  }
+
+  //! custmize cell
   customizeCell(args: QueryCellInfoEventArgs) {
     for (let data in this.newColourColumn) {
       if (this.newColourColumn[data].fieldName == args.column.field) {
@@ -266,19 +421,19 @@ export class TrigreedComponent implements OnInit {
         else if (this.newColourColumn[data].colurs == 'red') {
           args.cell.setAttribute('style', 'color:red;text-align:center;');
         } else {
-          args.cell.setAttribute('style', 'color:#336c12;text-align:center;');
+          args.cell.setAttribute('style', 'color:#336c12');
         }
       }
     }
   }
 
-  // add new column
+  //! add new column
   onClick() {
     $('#exampleModalAdd').modal('show');
     this.columnName = null;
   }
 
-  // get random Id
+  //! get random Id
   public getRandomID(): string {
     const S4 = () => {
       return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -286,7 +441,7 @@ export class TrigreedComponent implements OnInit {
     return S4() + S4();
   }
 
-  // add new column
+  //! add new column
   AddColumn() {
     if (this.columnName == null) {
       alert("Please fill column name");
@@ -390,6 +545,103 @@ export class TrigreedComponent implements OnInit {
     }
   }
 
+  // ! Delete Column
+
+  deleteColumnDialog() {
+    $('#exampleModalDelete').modal('show');
+  }
+
+  deleteColumn() {
+    this.treeGridObj.columns.findIndex((i, x) => {
+      if (i.field == this.treeGridobject.deleteField) {
+        this.treeGridObj.columns.splice(x, 1);
+        $('#exampleModalDelete').modal('hide');
+        this.treeGridObj.refreshColumns();
+      }
+    });
+
+  }
+
+  // ! Multi Sorting Functions Start
+
+  public onClick1(e: MouseEvent): void {
+    if (this.taskID.checked) {
+      this.treeGridObj.sortByColumn('taskID', 'Ascending', true);
+    } else {
+      this.treeGridObj.grid.removeSortColumn('taskID');
+    }
+
+  }
+  public onClick2(e: MouseEvent): void {
+    if (this.taskName.checked) {
+      this.treeGridObj.sortByColumn('taskName', 'Ascending', true);
+    } else {
+      this.treeGridObj.grid.removeSortColumn('taskName');
+    }
+
+  }
+  public onClick3(e: MouseEvent): void {
+    if (this.startDate.checked) {
+      this.treeGridObj.sortByColumn('startDate', 'Ascending', true);
+    } else {
+      this.treeGridObj.grid.removeSortColumn('startDate');
+    }
+
+  }
+  public onClick4(e: MouseEvent): void {
+    if (this.duration.checked) {
+      this.treeGridObj.sortByColumn('duration', 'Ascending', true);
+    } else {
+      this.treeGridObj.grid.removeSortColumn('duration');
+    }
+
+  }
+
+  public sort(args: SortEventArgs): void {
+    if (args.requestType === 'sorting') {
+      for (let columns of this.treeGridObj.getColumns()) {
+        for (let sortcolumns of this.treeGridObj.sortSettings.columns) {
+          if (sortcolumns.field === columns.field) {
+            this.check(sortcolumns.field, true); break;
+          } else {
+            this.check(columns.field, false);
+          }
+        }
+      }
+    }
+
+  }
+
+  public check(field: string, state: boolean): void {
+    switch (field) {
+      case 'taskID':
+        this.taskID.checked = state; break;
+      case 'taskName':
+        this.taskName.checked = state; break;
+      case 'startDate':
+        this.startDate.checked = state; break;
+      case 'duration':
+        this.duration.checked = state; break;
+    }
+  }
+
+  // ! Multi Sorting Functions End
+
+  // ! Cell alignment
+
+  public onChange(e: ChangeEventArgs): void {
+    let columnName: string = <string>e.value;
+    let alignment: any = this.treeGridObj.getColumnByField(columnName).textAlign;
+    this.dropdown3.value = alignment;
+  }
+  public changeAlignment(e: ChangeEventArgs): void {
+    let alignment: any = e.value;
+    this.treeGridobject.columnAlign = e.value;
+    console.log("this.treeGridobject.columnAlign", this.treeGridobject.columnAlign)
+    // this.treeGridObj.getColumnByField(columnName).textAlign = alignment;
+    // console.log(this.treeGridObj.getColumnByField(columnName))
+    // this.treeGridObj.refreshColumns();
+  }
 }
 
 

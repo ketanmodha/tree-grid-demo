@@ -15,7 +15,7 @@ import {
   SortSettingsModel
 } from "@syncfusion/ej2-angular-treegrid";
 import { EditSettingsModel } from '@syncfusion/ej2-treegrid';
-import { getData } from './data';
+// import { getData } from './data';
 
 @Component({
   selector: "app-root",
@@ -24,11 +24,11 @@ import { getData } from './data';
   providers: [ResizeService, ReorderService, RowDDService, SelectionService, SortService, ResizeService, PageService, EditService, ExcelExportService, PdfExportService, ContextMenuService]
 })
 export class AppComponent implements OnInit {
-  
+
 
   ngOnInit(): void {
-    
+
   }
 
-  
+
 }
