@@ -1,90 +1,123 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { GridComponent } from '@syncfusion/ej2-angular-grids';
-import { FilterService, VirtualScrollService } from '@syncfusion/ej2-angular-treegrid';
-import { getData } from '../data';
-import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
+import { Component } from '@angular/core';
+import { OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import { MenuItemModel, ContextMenu } from '@syncfusion/ej2-navigations';
+import { dragData, sampleData } from "../data"
+
+import { EditSettingsModel, ToolbarItems } from '@syncfusion/ej2-angular-treegrid';
+//import { ContextMenuModule } from "@syncfusion/ej2-angular-navigations";
+import {
+    TreeGridComponent,
+    RowDDService,
+    SelectionService,
+    EditService,
+    PageService,
+    CommandColumnService,
+    ContextMenuService
+} from "@syncfusion/ej2-angular-treegrid";
+import { BeforeOpenCloseEventArgs } from '@syncfusion/ej2-inputs';
+import { MenuEventArgs } from '@syncfusion/ej2-navigations';
+import { AnyKindOfDictionary } from 'lodash';
+import { ButtonArgs } from '@syncfusion/ej2-popups';
+import { MouseEventArgs } from '@syncfusion/ej2-base';
+import { ContextMenuClickEventArgs } from '@syncfusion/ej2-grids';
 
 @Component({
     selector: 'app-largedata',
     templateUrl: './largedata.component.html',
     styleUrls: ['./largedata.component.css'],
-    providers: [FilterService, VirtualScrollService]
 })
 export class LargedataComponent implements OnInit {
 
-    public dReady: boolean = false;
-    public dtTime: boolean = false;
-    public isDataBound: boolean = false;
-    public isDataChanged: boolean = true;
-    public intervalFun: any;
-    public clrIntervalFun: any;
-    public clrIntervalFun1: any;
-    public clrIntervalFun2: any;
-    public dropSlectedIndex: number = null;
-    public stTime: any;
-    public data: Object;
-    public filter: Object;
-    public filterSettings: Object;
-    public selectionSettings: Object;
-    public height: string = '240px';
-    public listObj: DropDownListComponent;
-    public gridInstance: GridComponent;
-    public ddlData: Object[] = [
-        { text: '1,000 Rows and 11 Columns', value: '1000' },
-        { text: '10,000 Rows and 11 Columns', value: '10000' },
-        { text: '1,00,000 Rows and 11 Columns', value: '100000' }
-    ];
-    public fields: Object = { text: 'text', value: 'value' };
-    public item: number[] = [1, 2, 3, 4, 5];
+    public data: Object[] = [];
+    public gridData: Object[] = [];
+    public pageSetting: Object;
+    public selectOptions: Object;
+    public treeColumns: any;
+    public editSettings: EditSettingsModel;
+    public contextMenuItems: Object[];
+    public tree: TreeGridComponent;
+    public isCommandClick: boolean = false;
 
-    public ngOnInit(): void {
-        this.data = getData(1000);
-        this.filterSettings = { type: "Menu" };
-        this.filter = { type: "CheckBox" };
-        this.stTime = performance.now();
-        this.selectionSettings = { persistSelection: true, type: "Multiple", checkboxOnly: true };
+    @ViewChild("treegrid", { static: false })
+    public treegrid: TreeGridComponent;
 
+    ngOnInit(): void {
+
+
+        this.data = sampleData;
+        this.selectOptions = { type: "Multiple" };
+        this.treeColumns = this.createTreeGridColumns();
+        this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Row' };
+        this.contextMenuItems = [
+            { text: "Add Child", target: ".e-content", id: "addchild" },
+            { text: "Copy", target: ".e-content", id: "copy" },
+        ];
+    }
+    btnclick(e: MouseEventArgs) {
+        var element: EventTarget = e.target;
+        var ev: Event = document.createEvent('HTMLEvents');
+        ev['pageX'] = e.pageX, ev['pageY'] = e.pageY;
+        ev.initEvent("contextmenu", true, false)
+        element.dispatchEvent(ev);
+    }
+    // contextMenuOpen(args: BeforeOpenCloseEventArgs) {
+    //   if (!(<HTMLElement>args.event.target).classList.contains('e-btn-icon')) {
+    //     args.cancel = true;
+    //   }
+
+    // }
+    contextMenuClick(args: ContextMenuClickEventArgs): void {
+        var idx: any = args.rowInfo.rowIndex
+        if (args.item.id === 'addchild') {
+            var data = { taskID: 88, priority: "high" };
+            this.treegrid.addRecord(data, idx, "Below");
+        }
+
+        else if (args.item.id === 'copy') {
+            this.treegrid.selectRow(idx);
+
+            this.treegrid.copy();
+        }
+    }
+    reorder(args) {
+        var data = { taskID: 88, priority: "high" };
+        this.treegrid.addRecord(data, 2, "Below");
     }
 
-    ngAfterViewInit(args: any): void {
-        this.gridInstance.on('data-ready', function () {
-            this.dReady = true;
-        });
-        document.getElementById('overviewgrid').addEventListener('DOMSubtreeModified', () => {
-            if (this.stTime && this.isDataChanged) {
-                let msgEle = document.getElementById('msg');
-                let val: any = (performance.now() - this.stTime).toFixed(0);
-                this.stTime = null;
-                this.dtTime = false;
-                this.isDataChanged = false;
-                msgEle.innerHTML = 'Load Time: ' + "<b>" + val + "</b>" + '<b>ms</b>';
-                msgEle.classList.remove('e-hide')
+    private createTreeGridColumns() {
+        return [
+            {
+                field: "taskID",
+                headerText: "Task ID",
+                isPrimaryKey: "true",
+                editType: "defaultedit",
+                customAttributes: { class: "customcss" }
+            },
+
+            {
+                field: "startDate",
+                headerText: "Start Date",
+                editType: "defaultedit"
+            },
+            {
+                field: "priority",
+                headerText: "Priority",
+                editType: "defaultedit"
+            },
+            {
+                headerText: "action",
+                commands: [
+                    {
+                        buttonOption: {
+                            iconCss: "e-icons e-detail",
+                            cssClass: "e-flat",
+
+                            click: this.btnclick.bind(this)
+                        }
+                    }
+                ]
             }
-        })
+        ];
     }
-    valueChange(args: any): void {
-        this.listObj.hidePopup();
-        this.gridInstance.showSpinner();
-        this.dropSlectedIndex = null;
-        let index: number = this.listObj.value as number;
-        clearTimeout(this.clrIntervalFun2);
-        this.clrIntervalFun2 = setTimeout(() => {
-            this.isDataChanged = true;
-            this.stTime = null;
-            let contentElement: Element = this.gridInstance.contentModule.getPanel().firstChild as Element;
-            contentElement.scrollLeft = 0;
-            contentElement.scrollTop = 0;
-            this.gridInstance.pageSettings.currentPage = 1;
-            this.stTime = performance.now();
-            this.gridInstance.dataSource = getData(index);
-            this.gridInstance.hideSpinner();
-        }, 100);
-    }
-    onDataBound(args: any): void {
-        clearTimeout(this.clrIntervalFun);
-        clearInterval(this.intervalFun);
-        this.dtTime = true;
-    }
-
 
 }
