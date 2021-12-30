@@ -25,7 +25,7 @@ import {
   VirtualScrollService,
   ColumnMenuService,
 } from "@syncfusion/ej2-angular-treegrid";
-import { sampleData } from "../datasource";
+import { sampleData } from "../data";
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { getValue, isNullOrUndefined } from "@syncfusion/ej2-base";
 import { BeforeOpenCloseEventArgs } from "@syncfusion/ej2-inputs";
@@ -183,6 +183,7 @@ export class TrigreedComponent implements OnInit {
       { text: "Add Child", target: ".e-content", id: "addchild" },
       { separator: true, target: ".e-content" },
       { text: "Delete Row", target: ".e-content", id: "deleterow" },
+      'Edit',
       { text: "Edit Row", target: ".e-content", id: "editrow" },
       { text: "Multi Select", target: ".e-content", id: "multiselect" },
       { separator: true, target: ".e-content" },
@@ -190,7 +191,6 @@ export class TrigreedComponent implements OnInit {
       { text: "Cut Rows", target: ".e-content", id: "cutrows" },
       { text: "Paste Next", target: ".e-content", id: "pastenext" },
       { text: "Paste Child", target: ".e-content", id: "pastechild" },
-      { text: "Colour: Green", target: ".e-headercell", id: "setColourgreen" },
     ];
 
     this.sortSettings = {
@@ -203,8 +203,7 @@ export class TrigreedComponent implements OnInit {
       allowEditing: true,
       allowAdding: true,
       allowDeleting: true,
-      mode: "Batch",
-      newRowPosition: "Child",
+      mode: "Row",
     };
     this.editparams = { params: { format: "n" } };
     this.pageSettings = { pageSize: 100 };
@@ -294,6 +293,7 @@ export class TrigreedComponent implements OnInit {
   }
 
   contextMenuClick(args?: MenuEventArgs): void {
+    var idx: any = args['rowInfo'].rowIndex;
     // A row where right click happened
     let row: Element = args["rowInfo"].row;
 
@@ -316,6 +316,7 @@ export class TrigreedComponent implements OnInit {
 
       // Assigning and saving the data to clipboard
       let copiedObject = this.treeGridObj.grid.getRowObjectFromUID(uid).data;
+      this.treeGridobject.copiedObject = copiedObject;
       this.clipboardData.push(copiedObject);
     } else if (args.item["properties"].id === "cutrows") {
       // Clear clipboard
@@ -326,17 +327,23 @@ export class TrigreedComponent implements OnInit {
 
       // Assigning and saving the data to clipboard
       let copiedObject = this.treeGridObj.grid.getRowObjectFromUID(uid).data;
+      this.treeGridobject.copiedObject = copiedObject;
       this.clipboardData.push(copiedObject);
+      this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
+
     } else if (args.item["properties"].id === "pastenext") {
+      // this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
+
       // Increment the row index, as we will be adding the copied record next to the clicked record
-      clickedRowIndex++;
+      // clickedRowIndex++;
 
       // Insert row to grid
-      if (clickedRowIndex >= 0) {
-        this.clipboardData.map((rowItem) => {
-          this.treeGridObj.addRecord(rowItem, clickedRowIndex, "Below");
-        });
-      }
+      this.treeGridObj.addRecord(this.treeGridobject.copiedObject, idx, "Below");
+      // if (clickedRowIndex >= 0) {
+      //   this.clipboardData.map((rowItem) => {
+      //     this.treeGridObj.addRecord(rowItem, clickedRowIndex, "Below");
+      //   });
+      // }
 
       // Clear clipboard
       if (this.shouldMove) {
@@ -345,19 +352,42 @@ export class TrigreedComponent implements OnInit {
       }
     } else if (args.item["properties"].id === "pastechild") {
       // Increment the row index, as we will be adding the copied record next to the clicked record
-      clickedRowIndex++;
+      // clickedRowIndex++;
 
-      // Move row to grid
-      if (clickedRowIndex >= 0) {
-        this.clipboardData.map((rowItem) => {
-          this.treeGridObj.addRecord(rowItem, clickedRowIndex, "Child");
-        });
+      this.treeGridObj.addRecord(this.treeGridobject.copiedObject, idx, "Child");
 
-        // Clear clipboard
-        if (this.shouldMove) this.clipboardData = [];
+      if (this.shouldMove) {
+        this.clipboardData = [];
         this.shouldMove = false;
       }
-    } else if (args.item["properties"].id == "ranamecolumn") {
+
+      // Move row to grid
+      // if (clickedRowIndex >= 0) {
+      //   this.clipboardData.map((rowItem) => {
+      //     this.treeGridObj.addRecord(rowItem, clickedRowIndex, "Child");
+      //   });
+
+      //   // Clear clipboard
+      //   if (this.shouldMove) this.clipboardData = [];
+      //   this.shouldMove = false;
+      // }
+    } else if (args.item['properties'].id === 'addnext') {
+      // Adding Next Row from the selected row
+
+      // get Random Data
+      var data = { taskID: this.getRandomID(), duration: 10 };
+      this.treeGridObj.addRecord(data, idx, "Below");
+
+    } else if (args.item['properties'].id === 'addchild') {
+      // Paste Child  Row from the selected row
+
+      // get Random Data
+      var data = { taskID: this.getRandomID(), duration: 10 };
+      this.treeGridObj.addRecord(data, idx, "Child");
+
+    }
+
+    else if (args.item["properties"].id == "ranamecolumn") {
       console.log("args", args);
       this.headerText = args["column"].field;
       this.changeHeader = args["column"].headerText;
@@ -411,8 +441,6 @@ export class TrigreedComponent implements OnInit {
       this.treeGridObj.toolbarModule.enableItems(["_gridcontrol_Paste"], true);
     } else if (args.item["properties"].id == "below") {
       this.treeGridObj.addRecord(this.copyNewObj, 0, "Below");
-    } else if (args.item["properties"].id == "pastechild") {
-      this.treeGridObj.addRecord(this.copyNewObj, 0, "Child");
     } else if (args.item["properties"].id == "Cut") {
       this.flagCut = false;
       for (let cut in this.cutObject) {
