@@ -136,6 +136,7 @@ export class TrigreedComponent implements OnInit {
   treeGridobject: any = {};
 
   ngOnInit(): void {
+    this.treeGridobject.selectedRows = [];
     this.data = sampleData;
     this.customAttributes = { class: "customcss" };
     this.columns = [
@@ -293,12 +294,14 @@ export class TrigreedComponent implements OnInit {
   }
 
   contextMenuClick(args?: MenuEventArgs): void {
+    console.log("args", args);
     var idx: any = args['rowInfo'].rowIndex;
     // A row where right click happened
     let row: Element = args["rowInfo"].row;
 
     // Get UID of the clicked row
     let uid: string = row && row.getAttribute("data-uid");
+    console.log("uid", uid);
 
     // Get Index of clicked Row
     let clickedRowIndex: number =
@@ -337,8 +340,19 @@ export class TrigreedComponent implements OnInit {
       // Increment the row index, as we will be adding the copied record next to the clicked record
       // clickedRowIndex++;
 
+      /****** multiple Select paste next *****/
+
+      if (this.treeGridobject.selectedRows.length > 0) {
+        for (let data in this.treeGridobject.selectedRows) {
+          this.treeGridObj.addRecord(this.treeGridobject.selectedRows[data], idx, "Below");
+        }
+      } else {
+        this.treeGridObj.addRecord(this.treeGridobject.copiedObject, idx, "Below");
+
+      }
+
+
       // Insert row to grid
-      this.treeGridObj.addRecord(this.treeGridobject.copiedObject, idx, "Below");
       // if (clickedRowIndex >= 0) {
       //   this.clipboardData.map((rowItem) => {
       //     this.treeGridObj.addRecord(rowItem, clickedRowIndex, "Below");
@@ -456,6 +470,12 @@ export class TrigreedComponent implements OnInit {
     } else if (args.item["properties"].id == "multisort") {
       $("#multisorting").modal("show");
     }
+  }
+
+
+  // check box selected items 
+  getRowData(args: any): void {
+    console.log(this.gridObj.getRowInfo(args.target));
   }
 
   contextMenuOpen(arg?: BeforeOpenCloseEventArgs): void {
@@ -592,52 +612,52 @@ export class TrigreedComponent implements OnInit {
 
   // row selected
   rowSelected(args: RowSelectEventArgs) {
-    this.globleIndex = args.data["index"];
-    if (this.flagCut == true) {
-      if (args["isInteracted"] == true) {
-        if (args["rowIndexes"] == undefined || args["rowIndexes"].length > 0) {
-          this.copyObject.push(args.data["taskData"]);
-          this.cutObject.push(args.row);
-        }
-      } else if (args["isInteracted"] == false) {
-        if (args["target"] == null && !args["rowIndexes"]) {
-          this.copyObject.push(args.data["taskData"]);
-          this.cutObject.push(args.row);
-        } else {
-          for (let datas in args.data) {
-            this.copyObject.push(args.data[datas].taskData);
-          }
-          this.copyObject = this.copyObject.filter((res, index) => {
-            const _thing = JSON.stringify(res);
-            return (
-              index ===
-              this.copyObject.findIndex((obj) => {
-                return JSON.stringify(obj) === _thing;
-              })
-            );
-          });
-          this.cutObject = args.row;
-        }
+
+    console.log(args);
+    // Selected Rows Create array children and single record
+    if (args.data['childRecords']) {
+      console.log(args.data['childRecords'])
+      // create array children records
+      for (let data in args.data['childRecords']) {
+        this.treeGridobject.selectedRows.push(args.data['childRecords'][data])
       }
+    } else {
+      // create array for single records
+      this.treeGridobject.selectedRows.push(args.data['taskData'])
     }
   }
 
-  // row deselected
+  // row deselected and splice of array 
 
-  rowDeselected(argss: RowDeselectEventArgs) {
-    if (argss["isInteracted"] == true) {
-      if (argss["rowIndexes"] == undefined || argss["rowIndexes"].length > 0) {
-        const index = this.copyObject.indexOf(argss.data["taskData"]);
-        if (index >= 0 || index == -1) {
-          this.copyObject.splice(index, 1);
-        }
-        const indexx = this.cutObject.indexOf(argss.row);
-        if (indexx >= 0) {
-          this.cutObject.splice(index, 1);
+  rowDeselected(args: RowDeselectEventArgs) {
+    console.log(args);
+    // DeSelected Rows Splice object from  array children and single record
+
+    if (args.data['childRecords']) {
+      // Loop For desected children recoreds
+
+      for (let data in args.data['childRecords']) {
+        // find index from deslected records to selected recoreds 
+        const index = this.treeGridobject.selectedRows.indexOf(args.data['childRecords'][data]);
+
+        if (index >= 0) {
+          // splice record from selcted records
+          this.treeGridobject.selectedRows.splice(index, 1);
         }
       }
-    } else if (argss["isInteracted"] == false) {
+      // Deselct single record
+    } else {
+      // find index from deslected records to selected recoreds find
+      const index = this.treeGridobject.selectedRows.indexOf(args.data['taskData']);
+
+      if (index >= 0) {
+        // splice record from selcted records
+        this.treeGridobject.selectedRows.splice(index, 1);
+      }
     }
+
+
+
   }
 
   // ! Delete Column

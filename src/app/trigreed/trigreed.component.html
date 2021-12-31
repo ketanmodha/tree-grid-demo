@@ -18,6 +18,9 @@
 					(contextMenuOpen)='contextMenuOpen($event)' (queryCellInfo)='customizeCell($event)'
 					(actionComplete)="sort($event)">
 					<e-columns>
+						<e-column type="checkbox" width='40' textAlign='center'>
+
+						</e-column>
 						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='80' textAlign='Right'
 							freeze='Left'>
 						</e-column>

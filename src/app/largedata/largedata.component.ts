@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { GridComponent } from '@syncfusion/ej2-angular-grids';
 import { FilterService, VirtualScrollService } from '@syncfusion/ej2-angular-treegrid';
-import { getData } from '../data';
+import { sampleData } from "../data";
 import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
 
 @Component({
@@ -38,7 +38,7 @@ export class LargedataComponent implements OnInit {
     public item: number[] = [1, 2, 3, 4, 5];
 
     public ngOnInit(): void {
-        this.data = getData(1000);
+        this.data = sampleData;
         this.filterSettings = { type: "Menu" };
         this.filter = { type: "CheckBox" };
         this.stTime = performance.now();
@@ -76,7 +76,7 @@ export class LargedataComponent implements OnInit {
             contentElement.scrollTop = 0;
             this.gridInstance.pageSettings.currentPage = 1;
             this.stTime = performance.now();
-            this.gridInstance.dataSource = getData(index);
+            this.gridInstance.dataSource = sampleData;
             this.gridInstance.hideSpinner();
         }, 100);
     }
