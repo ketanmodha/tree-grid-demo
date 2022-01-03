@@ -7,6 +7,10 @@
 					<button id='add' class="btn btn mb-2 flot-right" style="background: #80808087;"
 						(click)='onClick()'>Add New Column</button>
 				</div> [enableInfiniteScrolling]='true' [sortSettings]="sortSettings"-->
+				<!-- <div class="grid-freezecol">
+                    <ejs-dropdownlist id='direction' #directiondropdown index='0' [dataSource]='directionData'
+                        (change)='directionChange($event)' [fields]='fields'></ejs-dropdownlist>
+                </div> -->
 				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (toolbarClick)='toolbarClick($event)'
 					[toolbar]='toolbarOption' [treeColumnIndex]="1" [allowFiltering]="true" [allowSorting]="true"
 					childMapping="subtasks" [pageSettings]="pageSettings" [filterSettings]="filterSettings"
@@ -19,19 +23,17 @@
 					(actionComplete)="sort($event)">
 					<e-columns>
 						<e-column type="checkbox" width='40' textAlign='center'>
-
 						</e-column>
-						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='80' textAlign='Right'
-							freeze='Left'>
+						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='80' textAlign='Right'>
 						</e-column>
 						<e-column field='taskName' headerText='Task Name' width='200'
 							[customAttributes]='customAttributes'>
 						</e-column>
 						<e-column field='startDate' headerText='Start Date' width='100' format="yMd" textAlign='Right'>
 						</e-column>
-						<e-column field='duration' headerText='Duration' [filterBarTemplate]="templateOptions"
-							width='90' textAlign='Right'>
+						<e-column field='duration' headerText='Duration' width='90' textAlign='Right'>
 						</e-column>
+						<!-- [filterBarTemplate]="templateOptions" -->
 					</e-columns>
 				</ejs-treegrid>
 			</div>
@@ -287,7 +289,7 @@
 								</td>
 								<td style="width: 30%;padding:10px 10px 10px 0px">
 									<div class="col-md-6">
-										<ejs-checkbox #taskID [checked]="true" (change)="onClick1($event)">
+										<ejs-checkbox #taskID (change)="onClick1($event)">
 										</ejs-checkbox>
 									</div>
 								</td>
@@ -300,7 +302,7 @@
 								</td>
 								<td style="width: 30%;padding:10px 10px 10px 0px">
 									<div class="col-md-6">
-										<ejs-checkbox #taskName [checked]="true" (change)="onClick2($event)">
+										<ejs-checkbox #taskName (change)="onClick2($event)">
 										</ejs-checkbox>
 									</div>
 								</td>

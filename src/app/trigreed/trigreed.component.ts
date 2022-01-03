@@ -135,6 +135,13 @@ export class TrigreedComponent implements OnInit {
   public customAttributes: Object;
   treeGridobject: any = {};
 
+
+  public directionData: Object[] = [
+    { id: 'Left', name: 'Left' },
+    { id: 'Right', name: 'Right' },
+    { id: 'Center', name: 'Center' }
+  ];
+
   ngOnInit(): void {
     this.treeGridobject.selectedRows = [];
     this.treeGridobject.copiedRows = [];
@@ -329,6 +336,8 @@ export class TrigreedComponent implements OnInit {
 
       this.treeGridobject.copiedRows = [];
       this.treeGridobject.copiedRows = this.treeGridobject.selectedRows;
+
+      console.log("this.treeGridobject.copiedRows", this.treeGridobject.copiedRows)
       this.treeGridobject.selectedRows = [];
 
       // copy row menu css
@@ -575,6 +584,16 @@ export class TrigreedComponent implements OnInit {
     return S4();
   }
 
+  // ! String Id generate
+
+  public getRandomIDString(): string {
+    const S4 = () => {
+      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    };
+    return S4() + S4();
+  }
+
+
   //! add new column
   AddColumn() {
     if (this.columnName == null) {
@@ -583,13 +602,15 @@ export class TrigreedComponent implements OnInit {
     }
     this.newColumns = [
       {
-        field: this.getRandomID(),
+        field: this.getRandomIDString(),
         headerText: this.columnName,
         type: "string",
       },
     ];
     if (this.flag) {
+      console.log("args>>>>>>>>>>>")
       this.newColumns.forEach((Column) => {
+        console.log("args", Column)
         this.treeGridObj.columns.push(Column);
       });
       this.treeGridObj.refreshColumns();
