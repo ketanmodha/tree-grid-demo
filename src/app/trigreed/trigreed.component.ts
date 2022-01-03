@@ -137,6 +137,8 @@ export class TrigreedComponent implements OnInit {
 
   ngOnInit(): void {
     this.treeGridobject.selectedRows = [];
+    this.treeGridobject.copiedRows = [];
+    this.treeGridobject.selectedHTMLRow = [];
     this.data = sampleData;
     this.customAttributes = { class: "customcss" };
     this.columns = [
@@ -265,7 +267,6 @@ export class TrigreedComponent implements OnInit {
       ]),
       setTimeout(() => {
         this.disable();
-        console.log("TreeGrid", this.toolbarOption);
       }, 200);
   }
 
@@ -282,7 +283,6 @@ export class TrigreedComponent implements OnInit {
   }
 
   select(args: any): void {
-    console.log("args", args);
     if (
       this.gridObj.getColumns().length - 1 >
       this.gridObj.getFrozenColumns()
@@ -306,7 +306,6 @@ export class TrigreedComponent implements OnInit {
 
     // Get UID of the clicked row
     let uid: string = row && row.getAttribute("data-uid");
-    console.log("uid", uid);
 
     // Get Index of clicked Row
     let clickedRowIndex: number =
@@ -316,7 +315,6 @@ export class TrigreedComponent implements OnInit {
       // Delete selected row
       this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
     } else if (args.item["properties"].id === "copyrows") {
-      console.log("args", args)
       // Clear clipboard
       this.clipboardData = [];
 
@@ -326,10 +324,32 @@ export class TrigreedComponent implements OnInit {
       // Assigning and saving the data to clipboard
       let copiedObject = this.treeGridObj.grid.getRowObjectFromUID(uid).data;
       this.treeGridobject.copiedObject = copiedObject;
-      this.clipboardData.push(copiedObject);
+
+      // Managing a Selected and copy array 
+
+      this.treeGridobject.copiedRows = [];
+      this.treeGridobject.copiedRows = this.treeGridobject.selectedRows;
+      this.treeGridobject.selectedRows = [];
+
+      // copy row menu css
+
+      let style = "pointer-events: none; opacity: 0.6"
+      document.querySelectorAll("li#copyrows")[0].setAttribute("style", style);
+
     } else if (args.item["properties"].id === "cutrows") {
+      console.log("args", args)
       // Clear clipboard
       this.clipboardData = [];
+
+      for (let data in this.treeGridobject.selectedRows) {
+        // find index from deslected records to selected recoreds 
+        const index = this.treeGridobject.selectedRows.indexOf(this.treeGridobject.selectedRows[data]);
+
+        if (index >= 0) {
+          // splice record from selcted records
+          sampleData.splice(index, 1);
+        }
+      }
 
       // Setting up shouldMove to true as it's a cut operation
       this.shouldMove = true;
@@ -337,8 +357,20 @@ export class TrigreedComponent implements OnInit {
       // Assigning and saving the data to clipboard
       let copiedObject = this.treeGridObj.grid.getRowObjectFromUID(uid).data;
       this.treeGridobject.copiedObject = copiedObject;
-      this.clipboardData.push(copiedObject);
-      this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
+
+      for (let htmlRow in this.treeGridobject.selectedHTMLRow) {
+        this.treeGridObj.deleteRow(<HTMLTableRowElement>this.treeGridobject.selectedHTMLRow[htmlRow]);
+
+      }
+
+      this.treeGridobject.copiedRows = [];
+      this.treeGridobject.copiedRows = this.treeGridobject.selectedRows;
+      this.treeGridobject.selectedRows = [];
+
+      // copy row menu css
+
+      let style = "pointer-events: none; opacity: 0.6"
+      document.querySelectorAll("li#cutrows")[0].setAttribute("style", style);
 
     } else if (args.item["properties"].id === "pastenext") {
       // this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
@@ -348,57 +380,47 @@ export class TrigreedComponent implements OnInit {
 
       /****** multiple Select paste next *****/
 
-      if (this.treeGridobject.selectedRows.length > 0) {
-        for (let data in this.treeGridobject.selectedRows) {
-          this.treeGridObj.addRecord(this.treeGridobject.selectedRows[data], idx, "Below");
+      if (this.treeGridobject.copiedRows.length > 1) {
+        for (let data in this.treeGridobject.copiedRows) {
+          this.treeGridObj.addRecord(this.treeGridobject.copiedRows[data], idx, "Below");
         }
       } else {
         this.treeGridObj.addRecord(this.treeGridobject.copiedObject, idx, "Below");
-
       }
 
+      this.treeGridobject.copiedRows = [];
 
-      // Insert row to grid
-      // if (clickedRowIndex >= 0) {
-      //   this.clipboardData.map((rowItem) => {
-      //     this.treeGridObj.addRecord(rowItem, clickedRowIndex, "Below");
-      //   });
-      // }
+      // copy row menu css
 
-      // Clear clipboard
-      if (this.shouldMove) {
-        this.clipboardData = [];
-        this.shouldMove = false;
-      }
+      let style = "pointer-events: cursor; opacity: 1"
+      document.querySelectorAll("li#copyrows")[0].setAttribute("style", style);
+      document.querySelectorAll("li#cutrows")[0].setAttribute("style", style);
 
 
       // paste next paste child menu opacity and pointer event function
-      // this.pastNextandChildStyle();
     } else if (args.item["properties"].id === "pastechild") {
       // Increment the row index, as we will be adding the copied record next to the clicked record
       // clickedRowIndex++;
 
-      this.treeGridObj.addRecord(this.treeGridobject.copiedObject, idx, "Child");
+      /****** multiple Select paste child *****/
 
-      if (this.shouldMove) {
-        this.clipboardData = [];
-        this.shouldMove = false;
+      if (this.treeGridobject.copiedRows.length > 1) {
+        for (let data in this.treeGridobject.copiedRows) {
+          this.treeGridObj.addRecord(this.treeGridobject.copiedRows[data], idx, "Child");
+        }
+      } else {
+        this.treeGridObj.addRecord(this.treeGridobject.copiedObject, idx, "Child");
+
       }
 
-      // paste next paste child menu opacity and pointer event function
-      this.treeGridobject.selectedRows = []
-      this.pastNextandChildStyle(this.treeGridobject.selectedRows.length);
+      this.treeGridobject.copiedRows = [];
 
-      // Move row to grid
-      // if (clickedRowIndex >= 0) {
-      //   this.clipboardData.map((rowItem) => {
-      //     this.treeGridObj.addRecord(rowItem, clickedRowIndex, "Child");
-      //   });
+      // copy row menu css
 
-      //   // Clear clipboard
-      //   if (this.shouldMove) this.clipboardData = [];
-      //   this.shouldMove = false;
-      // }
+      let style = "pointer-events: cursor; opacity: 1"
+      document.querySelectorAll("li#copyrows")[0].setAttribute("style", style);
+      document.querySelectorAll("li#cutrows")[0].setAttribute("style", style);
+
     } else if (args.item['properties'].id === 'addnext') {
       // Adding Next Row from the selected row
 
@@ -468,36 +490,22 @@ export class TrigreedComponent implements OnInit {
 
   // check box selected items 
   getRowData(args: any): void {
-    console.log(this.gridObj.getRowInfo(args.target));
   }
 
   contextMenuOpen(arg?: BeforeOpenCloseEventArgs): void {
-    this.pastNextandChildStyle(this.treeGridobject.selectedRows.length);
-    console.log("arg", arg)
+    // this.pastNextandChildStyle(this.treeGridobject.selectedRows.length);
     /* Checked if any row/record is being cut or copied,
     / based on that, it activates / deactivates the paste next and paste child menu items.
     */
+    console.log("this.treeGridobject.copiedRows", this.treeGridobject.copiedRows)
     let style =
-      this.clipboardData.length === 0
+      this.treeGridobject.copiedRows.length === 0
         ? "pointer-events: none; opacity: 0.6"
         : "";
-    console.log(style);
     document.querySelectorAll("li#pastenext")[0].setAttribute("style", style);
     document.querySelectorAll("li#pastechild")[0].setAttribute("style", style);
   }
 
-  // ! paste next and child pointer events and opacity css
-
-  pastNextandChildStyle(length: number) {
-    console.log("lenghth>>>>>>", length)
-    let style =
-      length === 0
-        ? "pointer-events: none; opacity: 0.6"
-        : "";
-    console.log(style);
-    document.querySelectorAll("li#pastenext")[0].setAttribute("style", "pointer-events: none; opacity: 0.6");
-    document.querySelectorAll("li#pastechild")[0].setAttribute("style", style);
-  }
 
   //! Edit column Save
 
@@ -511,7 +519,6 @@ export class TrigreedComponent implements OnInit {
       return;
     }
     const column = this.treeGridObj.getColumnByField(this.headerText);
-    console.log(column);
     column.headerText = this.changeHeader;
     // this.treeGridObj.refreshColumns();
     setTimeout(() => {
@@ -561,11 +568,11 @@ export class TrigreedComponent implements OnInit {
   }
 
   //! get random Id
-  public getRandomID(): string {
+  public getRandomID(): any {
     const S4 = () => {
-      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+      return (((1 + Math.random()) * 0x100 | 0));
     };
-    return S4() + S4();
+    return S4();
   }
 
   //! add new column
@@ -624,49 +631,34 @@ export class TrigreedComponent implements OnInit {
 
     console.log(args);
     // Selected Rows Create array children and single record
-    if (args.data['childRecords']) {
-      console.log(args.data['childRecords'])
-      // create array children records
-      for (let data in args.data['childRecords']) {
-        this.treeGridobject.selectedRows.push(args.data['childRecords'][data])
-      }
-    } else {
-      // create array for single records
-      this.treeGridobject.selectedRows.push(args.data['taskData'])
-    }
 
-    console.log("this.treeGridobject.selectedRows", this.treeGridobject.selectedRows)
+    this.treeGridobject.selectedRows.push(args.data['taskData']);
+
+    // Multiple record delete
+
+    this.treeGridobject.selectedHTMLRow.push(args.row);
   }
 
   // row deselected and splice of array 
 
   rowDeselected(args: RowDeselectEventArgs) {
-    console.log(args);
     // DeSelected Rows Splice object from  array children and single record
+    // find index from deslected records to selected recoreds find
+    const index = this.treeGridobject.selectedRows.indexOf(args.data['taskData']);
 
-    if (args.data['childRecords']) {
-      // Loop For desected children recoreds
-
-      for (let data in args.data['childRecords']) {
-        // find index from deslected records to selected recoreds 
-        const index = this.treeGridobject.selectedRows.indexOf(args.data['childRecords'][data]);
-
-        if (index >= 0) {
-          // splice record from selcted records
-          this.treeGridobject.selectedRows.splice(index, 1);
-        }
-      }
-      // Deselct single record
-    } else {
-      // find index from deslected records to selected recoreds find
-      const index = this.treeGridobject.selectedRows.indexOf(args.data['taskData']);
-
-      if (index >= 0) {
-        // splice record from selcted records
-        this.treeGridobject.selectedRows.splice(index, 1);
-      }
+    if (index >= 0) {
+      // splice record from selcted records
+      this.treeGridobject.selectedRows.splice(index, 1);
     }
 
+    // Deseleted record splice
+
+    const indexs = this.treeGridobject.selectedHTMLRow.indexOf(args.data['taskData']);
+
+    if (indexs >= 0) {
+      // splice record from selcted records
+      this.treeGridobject.selectedHTMLRow.splice(index, 1);
+    }
 
 
   }
@@ -767,10 +759,6 @@ export class TrigreedComponent implements OnInit {
   public changeAlignment(e: ChangeEventArgs): void {
     let alignment: any = e.value;
     this.treeGridobject.columnAlign = e.value;
-    console.log(
-      "this.treeGridobject.columnAlign",
-      this.treeGridobject.columnAlign
-    );
     // this.treeGridObj.getColumnByField(columnName).textAlign = alignment;
     // console.log(this.treeGridObj.getColumnByField(columnName))
     // this.treeGridObj.refreshColumns();
