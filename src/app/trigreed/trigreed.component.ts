@@ -2,9 +2,12 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ToolbarItems, SelectionSettingsModel, SortSettingsModel, PageSettingsModel, EditSettingsModel, ResizeService, ContextMenuService, EditService, ExcelExportService, PageService, PdfExportService, ReorderService, RowDDService, SelectionService, SortService, ToolbarService, TreeGridComponent, FilterSettingsModel, Column } from '@syncfusion/ej2-angular-treegrid';
 import { sampleData } from '../datasource';
 import { MenuEventArgs } from '@syncfusion/ej2-navigations';
-import { getValue, isNullOrUndefined } from '@syncfusion/ej2-base';
+// import { getValue, isNullOrUndefined } from '@syncfusion/ej2-base';
 import { BeforeOpenCloseEventArgs } from '@syncfusion/ej2-inputs';
 import { GridComponent, QueryCellInfoEventArgs, RowDeselectEventArgs, RowSelectEventArgs } from '@syncfusion/ej2-angular-grids';
+import {RowDataBoundEventArgs} from '@syncfusion/ej2-grids';
+// import { dragData } from './jsontreegriddata';
+// import { TreeGridComponent, RowDDService, SelectionService} from '@syncfusion/ej2-angular-treegrid';
 
 declare var $: any;
 
@@ -22,42 +25,60 @@ export class TrigreedComponent implements OnInit {
   public contextMenuItems: Object[];
   public editSettings: EditSettingsModel;
   public editparams: Object;
-
   public datas: Object;
   public toolbarOption: string[];
   public selectionOptions: SelectionSettingsModel;
+
   @ViewChild('treeGridObj', { static: false })
   public treeGridObj: TreeGridComponent;
   public formatoption: Object;
-
-  public columns: Object[];
-
-  headerText: string;
-  changeHeader: string;
+  public columns: Object[]; 
+  headerText: string; 
+  changeHeader: string; 
   columnName: string;
 
   @ViewChild('grid', { static: false })
   gridObj: GridComponent;
-
   public flag = true;
   public newColumns;
   public newColourColumn: any = [];
-
   public copyObject: any = [];
   public cutObject: any = [];
   flagCut: boolean = true;
-
   copyNewObj:any = [];
   globleIndex:any;
+  treegrid: any;
+
+  // constructor() {
+  //   this.editSettings = {
+  //     allowEditing: true,
+  //     allowAdding: true,
+  //     rowPosition: ej.TreeGrid.RowPosition.Below,
+  //     allowDeleting: true,
+  //     editMode: 'rowEditing'
+  //   };
+  //   this.contextMenuSettings = {
+  //     showContextMenu: true,
+  //     contextMenuItems: [
+  //       ejs.TreeGrid.ContextMenuItems.Add,
+  //       ejs.TreeGrid.ContextMenuItems.Edit,
+  //       ejs.TreeGrid.ContextMenuItems.Delete
+  //     ]
+  //   };
+  // }
 
   ngOnInit(): void {
+    console.log("##", this.contextMenuItems)
     this.data = sampleData;
-    this.columns = [{ field: "taskID", headerText: 'Task Id', visble: true },
-    { field: "taskName", headerText: 'Task Name', visble: true },
-    { field: "startDate", headerText: 'Start Date', visble: true, format: 'yMd' },
-    { field: "duration", headerText: 'Duration', visble: true }];
+    this.columns = [
+      { field: "taskID", headerText: 'Task Id', visble: true },
+      { field: "taskName", headerText: 'Task Name', visble: true },
+      { field: "startDate", headerText: 'Start Date', visble: true, format: 'yMd' },
+      { field: "duration", headerText: 'Duration', visble: true }
+    ];
     this.toolbarOption = ['Search', 'Update', 'Cancel', 'Paste'];
     this.selectionOptions = { cellSelectionMode: 'Box', type: 'Multiple', mode: 'Row' };
+
     this.contextMenuItems = [
       {
         text: 'Edit Col',
@@ -95,6 +116,44 @@ export class TrigreedComponent implements OnInit {
         id: 'multisort'
       }
     ]
+
+    // this.contextMenuItemsList = [
+    //   {
+    //     text: 'Add Next',
+    //     target: '.e-headercell',
+    //     id: ''
+    //   },
+    //   {
+    //     text: 'Add Child',
+    //     target: '.e-headercell',
+    //     id: ''
+    //   },
+    //   {
+    //     text: 'Delete Row',
+    //     target: '.e-headercell',
+    //     id: ''
+    //   },
+    //   {
+    //     text: 'Edit Row',
+    //     target: '.e-headercell',
+    //     id: ''
+    //   },
+    //   {
+    //     text: 'Copy/Cut Row',
+    //     target: '.e-headercell',
+    //     id: ''
+    //   },
+    //   {
+    //     text: 'Paste Next',
+    //     target: '.e-headercell',
+    //     id: ''
+    //   },
+    //   {
+    //     text: 'Paste Child',
+    //     target: '.e-headercell',
+    //     id: ''
+    //   }
+    // ]
     // this.contextMenuItems = [
     //   'AutoFit',
     //   'AutoFitAll',
@@ -140,18 +199,59 @@ export class TrigreedComponent implements OnInit {
         { field: "taskID", direction: "Descending" }
       ]
     };
+
     this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Batch',newRowPosition: 'Child' };
+
     this.editparams = { params: { format: 'n' } };
     this.pageSettings = { pageSize: 100 };
-    this.filterSettings = { type: 'Menu', ignoreAccent: true };
-    this.formatoption = { type: 'dateTime', format: 'dd/MM/yyyy hh:mm a' }
+    // this.filterSettings = { type: 'Menu', ignoreAccent: true };
+    this.formatoption = { type: 'dateTime', format: 'dd/MM/yyyy hh:mm a'}
 
+    this.templateOptions = {
+      create: (args: { element: Element }) => {
+        let tt: HTMLInputElement = document.createElement("input");
+        tt.id = "duration";
+        return tt;
+      },
+      write: (args: { element: Element }) => {
+        let dataSource: String[];
+        this.dropDownFilter = new DropDownList({
+          dataSource: dataSource,
+          value: "All",
+          change: (e: ChangeEventArgs) => {
+            let numValue: any = +e.value;
+            let id: any = <string>this.dropDownFilter.element.id;
+            let value: any = <string>e.value;
+            if (value !== "All") {
+              this.treeGridObj.filterByColumn(id, "equal", numValue);
+            } else {
+              this.treeGridObj.removeFilteredColsByField(id);
+            }
+          },
+        });
+        this.dropDownFilter.appendTo("#duration");
+      },
+    };
+    this.field1 = { text: "mode", value: "id" };
+    this.fieldData1 = [
+      { id: "Parent", mode: "Parent" },
+      { id: "Child", mode: "Child"},
+    ];
+    this.filed2 = { text: "name", value: "id"};
+    this.field3 = { text: "name", value: "id"};
+
+    (this.fieldData2 = [
+      { id: "taskID", name:"Task ID"},
+      { id: "taskName", name:"Task Name"},
+      { id: "startDate", name:"Start Date"},
+      { id: "duration", name:"Duration"},
+    ]),
+      (this.field)
     setTimeout(() => {
       this.disable();
-      console.log("TreeGrid",this.toolbarOption)
+      console.log("TreeGrid#",this.toolbarOption)
     }, 200)
   }
-
 
   contextMenuClick(args?: MenuEventArgs): void {
     console.log("args",args);
@@ -274,6 +374,7 @@ export class TrigreedComponent implements OnInit {
 
   // add new column
   onClick() {
+    console.log("Add New Button Click")     
     $('#exampleModalAdd').modal('show');
     this.columnName = null;
   }
@@ -367,12 +468,14 @@ export class TrigreedComponent implements OnInit {
           this.cutObject = args.row;
         }
       }
-
     }
   }
 
-  // row deselected
+  onRightClick(event) {
+    console.log("Right Clicked Worked");
+  }
 
+  // row deselected
   rowDeselected(argss: RowDeselectEventArgs) {
     if (argss['isInteracted'] == true) {
       if (argss['rowIndexes'] == undefined || argss['rowIndexes'].length > 0) {
@@ -386,7 +489,6 @@ export class TrigreedComponent implements OnInit {
         }
       }
     } else if (argss['isInteracted'] == false) {
-
     }
   }
 
