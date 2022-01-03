@@ -165,12 +165,16 @@ export class TrigreedComponent implements OnInit {
     this.selectionOptions = {
       cellSelectionMode: "Box",
       type: "Multiple",
+      checkboxMode: 'ResetOnRowClick',
       mode: "Row",
     };
 
     // Context Menu Items for header and records
+
     this.contextMenuItems = [
+
       /* Context Menu Items for Header Cells */
+
       { text: "Edit Col", target: ".e-headercell", id: "ranamecolumn" },
       { text: "New Col", target: ".e-headercell", id: "addcolumn" },
       { text: "Del Col", target: ".e-headercell", id: "deletecolumn" },
@@ -180,6 +184,7 @@ export class TrigreedComponent implements OnInit {
       { text: "Multi Sort", target: ".e-headercell", id: "multisort" },
 
       /* Context Menu Items for Row Cells */
+
       { text: "Add Next", target: ".e-content", id: "addnext" },
       { text: "Add Child", target: ".e-content", id: "addchild" },
       { separator: true, target: ".e-content" },
@@ -311,6 +316,7 @@ export class TrigreedComponent implements OnInit {
       // Delete selected row
       this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
     } else if (args.item["properties"].id === "copyrows") {
+      console.log("args", args)
       // Clear clipboard
       this.clipboardData = [];
 
@@ -364,6 +370,10 @@ export class TrigreedComponent implements OnInit {
         this.clipboardData = [];
         this.shouldMove = false;
       }
+
+
+      // paste next paste child menu opacity and pointer event function
+      // this.pastNextandChildStyle();
     } else if (args.item["properties"].id === "pastechild") {
       // Increment the row index, as we will be adding the copied record next to the clicked record
       // clickedRowIndex++;
@@ -374,6 +384,10 @@ export class TrigreedComponent implements OnInit {
         this.clipboardData = [];
         this.shouldMove = false;
       }
+
+      // paste next paste child menu opacity and pointer event function
+      this.treeGridobject.selectedRows = []
+      this.pastNextandChildStyle(this.treeGridobject.selectedRows.length);
 
       // Move row to grid
       // if (clickedRowIndex >= 0) {
@@ -402,73 +416,52 @@ export class TrigreedComponent implements OnInit {
     }
 
     else if (args.item["properties"].id == "ranamecolumn") {
-      console.log("args", args);
+
+      // Rename column field
+
       this.headerText = args["column"].field;
+
+      // Rename column headerfield
+
       this.changeHeader = args["column"].headerText;
+
+      // For stying css add to class 
       args["rowInfo"].target.setAttribute("class", "headerColumnStyle");
+
+      //  Rename column text and styling property modal 
       $("#exampleModal").modal("show");
+
     } else if (args.item["properties"].id == "deletecolumn") {
+
+      // Delete Column Modal Open Function
       this.deleteColumnDialog();
+
+      // Delete column Field
       this.treeGridobject.deleteField = args["column"].field;
+
+      // Delete column headerText
       this.treeGridobject.deleteHeaderName = args["column"].headerText;
+
+      // Treegrid Refresh 
       this.treeGridObj.refresh();
       this.gridObj.refreshColumns();
-    } else if (args.item["properties"].id == "setColourgreen") {
-      this.newColourColumn.push({
-        fieldName: args["column"].field,
-        colurs: "green",
-      });
-      console.log(this.newColourColumn);
-      this.treeGridObj.refresh();
-    } else if (args.item["properties"].id == "setColourred") {
-      this.newColourColumn.push({
-        fieldName: args["column"].field,
-        colurs: "red",
-      });
-      this.treeGridObj.refresh();
-    } else if (args.item["properties"].id == "right") {
-      this.newColourColumn.push({
-        fieldName: args["column"].field,
-        textAlign: "right",
-      });
-      this.treeGridObj.refresh();
-    } else if (args.item["properties"].id == "left") {
-      this.newColourColumn.push({
-        fieldName: args["column"].field,
-        textAlign: "left",
-      });
-      this.treeGridObj.refresh();
-    } else if (args.item["properties"].id == "copyrows") {
-      console.log("Args:", args);
-      this.flagCut = false;
-      this.copyNewObj.push(args["rowInfo"].rowData["taskData"]);
-      this.treeGridObj.toolbarModule.enableItems(["_gridcontrol_Paste"], true); // enable toolbar items.
-    } else if (args.item["properties"].id == "above") {
-      for (let data in this.copyNewObj) {
-        this.treeGridObj.addRecord(
-          this.copyNewObj[data],
-          this.globleIndex,
-          "Top"
-        );
-      }
-      this.treeGridObj.addRecord(this.copyNewObj, this.globleIndex, "Top");
-      this.treeGridObj.toolbarModule.enableItems(["_gridcontrol_Paste"], true);
-    } else if (args.item["properties"].id == "below") {
-      this.treeGridObj.addRecord(this.copyNewObj, 0, "Below");
-    } else if (args.item["properties"].id == "Cut") {
-      this.flagCut = false;
-      for (let cut in this.cutObject) {
-        this.treeGridObj.deleteRow(<HTMLTableRowElement>this.cutObject[cut]);
-      }
-      this.cutObject = [];
-      this.treeGridObj.toolbarModule.enableItems(["_gridcontrol_Paste"], true);
+
+
     } else if (args.item["properties"].id == "addcolumn") {
+
+      // Add new Column Function
       this.onClick();
-    } else if (args.item["properties"].id == "freezecolumn") {
+
     } else if (args.item["properties"].id == "filtercolumn") {
+
+      // Filter type modal show 
       $("#filterModal").modal("show");
+
     } else if (args.item["properties"].id == "multisort") {
+
+      // Multi Sorting modal show
       $("#multisorting").modal("show");
+
     }
   }
 
@@ -479,6 +472,8 @@ export class TrigreedComponent implements OnInit {
   }
 
   contextMenuOpen(arg?: BeforeOpenCloseEventArgs): void {
+    this.pastNextandChildStyle(this.treeGridobject.selectedRows.length);
+    console.log("arg", arg)
     /* Checked if any row/record is being cut or copied,
     / based on that, it activates / deactivates the paste next and paste child menu items.
     */
@@ -486,7 +481,21 @@ export class TrigreedComponent implements OnInit {
       this.clipboardData.length === 0
         ? "pointer-events: none; opacity: 0.6"
         : "";
+    console.log(style);
     document.querySelectorAll("li#pastenext")[0].setAttribute("style", style);
+    document.querySelectorAll("li#pastechild")[0].setAttribute("style", style);
+  }
+
+  // ! paste next and child pointer events and opacity css
+
+  pastNextandChildStyle(length: number) {
+    console.log("lenghth>>>>>>", length)
+    let style =
+      length === 0
+        ? "pointer-events: none; opacity: 0.6"
+        : "";
+    console.log(style);
+    document.querySelectorAll("li#pastenext")[0].setAttribute("style", "pointer-events: none; opacity: 0.6");
     document.querySelectorAll("li#pastechild")[0].setAttribute("style", style);
   }
 
@@ -625,6 +634,8 @@ export class TrigreedComponent implements OnInit {
       // create array for single records
       this.treeGridobject.selectedRows.push(args.data['taskData'])
     }
+
+    console.log("this.treeGridobject.selectedRows", this.treeGridobject.selectedRows)
   }
 
   // row deselected and splice of array 
@@ -685,6 +696,7 @@ export class TrigreedComponent implements OnInit {
       this.treeGridObj.grid.removeSortColumn("taskID");
     }
   }
+
   public onClick2(e: MouseEvent): void {
     if (this.taskName.checked) {
       this.treeGridObj.sortByColumn("taskName", "Ascending", true);
@@ -692,6 +704,7 @@ export class TrigreedComponent implements OnInit {
       this.treeGridObj.grid.removeSortColumn("taskName");
     }
   }
+
   public onClick3(e: MouseEvent): void {
     if (this.startDate.checked) {
       this.treeGridObj.sortByColumn("startDate", "Ascending", true);
@@ -699,6 +712,7 @@ export class TrigreedComponent implements OnInit {
       this.treeGridObj.grid.removeSortColumn("startDate");
     }
   }
+
   public onClick4(e: MouseEvent): void {
     if (this.duration.checked) {
       this.treeGridObj.sortByColumn("duration", "Ascending", true);

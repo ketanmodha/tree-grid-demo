@@ -7,8 +7,7 @@
 					<button id='add' class="btn btn mb-2 flot-right" style="background: #80808087;"
 						(click)='onClick()'>Add New Column</button>
 				</div> [enableInfiniteScrolling]='true' [sortSettings]="sortSettings"-->
-				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (rowSelected)='rowSelected($event)'
-					(rowDeselected)='rowDeselected($event)' (toolbarClick)='toolbarClick($event)'
+				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (toolbarClick)='toolbarClick($event)'
 					[toolbar]='toolbarOption' [treeColumnIndex]="1" [allowFiltering]="true" [allowSorting]="true"
 					childMapping="subtasks" [pageSettings]="pageSettings" [filterSettings]="filterSettings"
 					[allowResizing]='true' [allowReordering]='true' [allowRowDragAndDrop]='true'
@@ -16,6 +15,7 @@
 					[contextMenuItems]='contextMenuItems' [editSettings]='editSettings' height='400' width='100%'
 					[frozenColumns]='0' (contextMenuClick)='contextMenuClick($event)'
 					(contextMenuOpen)='contextMenuOpen($event)' (queryCellInfo)='customizeCell($event)'
+					(rowSelected)='rowSelected($event)' (rowDeselected)='rowDeselected($event)'
 					(actionComplete)="sort($event)">
 					<e-columns>
 						<e-column type="checkbox" width='40' textAlign='center'>
