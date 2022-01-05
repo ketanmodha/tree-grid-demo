@@ -143,10 +143,14 @@ export class TrigreedComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+
     this.treeGridobject.selectedRows = [];
     this.treeGridobject.copiedRows = [];
     this.treeGridobject.selectedHTMLRow = [];
     this.data = sampleData;
+
+    // custom Attributes
+
     this.customAttributes = { class: "customcss" };
     this.columns = [
       { field: "taskID", headerText: "Task Id", visble: true, isFrozen: true },
@@ -457,6 +461,14 @@ export class TrigreedComponent implements OnInit {
       this.changeHeader = args["column"].headerText;
 
       // For stying css add to class 
+      let alignment: any = {
+
+        "background-color": this.treeGridobject.columnColor,
+        "color": this.treeGridobject.columnColorText,
+        "font-size": this.treeGridobject.columnColorFontSize,
+        "text-align": this.treeGridobject.columnAlign,
+
+      };
       args["rowInfo"].target.setAttribute("class", "headerColumnStyle");
 
       //  Rename column text and styling property modal 
@@ -518,7 +530,9 @@ export class TrigreedComponent implements OnInit {
 
   //! Edit column Save
 
-  click() {
+  EditColumn() {
+    // header field null
+
     if (
       this.changeHeader == null ||
       this.changeHeader == "" ||
@@ -527,12 +541,19 @@ export class TrigreedComponent implements OnInit {
       alert("Please fill header name");
       return;
     }
+
     const column = this.treeGridObj.getColumnByField(this.headerText);
+
     column.headerText = this.changeHeader;
-    // this.treeGridObj.refreshColumns();
+
+
+
     setTimeout(() => {
       this.stylingCell();
     }, 500);
+
+    this.treeGridObj.refreshHeader();
+
 
     // this.treeGridObj.getColumnByField(this.headerText)s = alignment;
     // console.log(this.treeGridObj.getColumnByField(columnName))
@@ -547,7 +568,7 @@ export class TrigreedComponent implements OnInit {
   stylingCell() {
     $(".customcss").css({
       "background-color": this.treeGridobject.columnColor,
-      color: this.treeGridobject.columnColorText,
+      "color": this.treeGridobject.columnColorText,
       "font-size": this.treeGridobject.columnColorFontSize,
       "text-align": this.treeGridobject.columnAlign,
     });

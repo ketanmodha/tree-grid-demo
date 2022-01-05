@@ -8,9 +8,9 @@
 						(click)='onClick()'>Add New Column</button>
 				</div> [enableInfiniteScrolling]='true' [sortSettings]="sortSettings"-->
 				<!-- <div class="grid-freezecol">
-                    <ejs-dropdownlist id='direction' #directiondropdown index='0' [dataSource]='directionData'
-                        (change)='directionChange($event)' [fields]='fields'></ejs-dropdownlist>
-                </div> -->
+					<ejs-dropdownlist id='direction' #directiondropdown index='0' [dataSource]='directionData'
+						(change)='directionChange($event)' [fields]='fields'></ejs-dropdownlist>
+				</div> -->
 				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (toolbarClick)='toolbarClick($event)'
 					[toolbar]='toolbarOption' [treeColumnIndex]="1" [allowFiltering]="true" [allowSorting]="true"
 					childMapping="subtasks" [pageSettings]="pageSettings" [filterSettings]="filterSettings"
@@ -150,8 +150,8 @@
 							<div class="input-group mb-3">
 								<span class="input-group-text" id="basic-addon1">Px</span>
 								<input type="number" class="form-control"
-									[(ngModel)]="treeGridobject.columnColorFontSize" placeholder="Font-size in px"
-									aria-label="Username" aria-describedby="basic-addon1">
+									[(ngModel)]="treeGridobject.columnColorFontSize" placeholder="Font-size"
+									aria-label="number" aria-describedby="basic-addon1">
 							</div>
 						</td>
 
@@ -162,7 +162,7 @@
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 					Close
 				</button>
-				<button type="submit" class="btn btn-primary" (click)="click()">
+				<button type="submit" class="btn btn-primary" (click)="EditColumn()">
 					Save changes
 				</button>
 			</div>
