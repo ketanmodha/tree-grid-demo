@@ -386,3 +386,25 @@
 		</div>
 	</div>
 </div>
+<!-- e-control e-dialog e-lib e-edit-dialog e-draggable e-dlg-modal e-popup e-popup-open -->
+<!-- Add New Record Modal-->
+<div class="modal fade e-dialog e-edit-dialog e-draggable" id="modalAddRow" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalLabel">Add New Record</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3" *ngFor="let col of columns">
+					<label for="exampleFormControlInput1" class="form-label">{{col.field}}</label>
+					<input type="text" class="form-control" id="exampleFormControlInput1" [(ngModel)]="newRecord[col.field]" name="{{col.field}}">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="submit" class="btn btn-primary" (click)="saveNewRecord()">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
