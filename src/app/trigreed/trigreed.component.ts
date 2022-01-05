@@ -43,6 +43,9 @@ import {
   ChangeEventArgs,
 } from "@syncfusion/ej2-angular-dropdowns";
 import { CheckBoxComponent } from "@syncfusion/ej2-angular-buttons";
+import { DialogComponent } from "@syncfusion/ej2-angular-popups";
+import { type } from "os";
+
 
 declare var $: any;
 
@@ -75,7 +78,7 @@ export class TrigreedComponent implements OnInit {
   public sortSettings: SortSettingsModel;
   public pageSettings: PageSettingsModel;
   public filterSettings: FilterSettingsModel;
-  public contextMenuItems: Object[];
+  public contextMenuItems: any = Object;
   public editSettings: EditSettingsModel;
   public editparams: Object;
   public datas: Object;
@@ -150,6 +153,14 @@ export class TrigreedComponent implements OnInit {
     { id: "Center", name: "Center" },
   ];
 
+
+  // ej2 angular modal 
+  @ViewChild('template', { static: false }) template: DialogComponent;
+  @ViewChild('deletetemplate', { static: false }) deletetemplate: DialogComponent;
+
+  // Create element reference for dialog target element.
+  @ViewChild('container', { read: ElementRef, static: false }) container: ElementRef;
+
   ngOnInit(): void {
     this.treeGridobject.selectedRows = [];
     this.treeGridobject.copiedRows = [];
@@ -157,10 +168,17 @@ export class TrigreedComponent implements OnInit {
     this.data = sampleData;
     this.customAttributes = { class: "customcss" };
     this.columns = [
-      { field: "taskID", headerText: "Task Id", visble: true, isFrozen: true },
+      {
+        field: "taskID",
+        headerText: "Task Id",
+        type: "number",
+        visble: true,
+        isFrozen: true
+      },
       {
         field: "taskName",
         headerText: "Task Name",
+        type: "text",
         visble: true,
         isFrozen: true,
       },
@@ -168,11 +186,13 @@ export class TrigreedComponent implements OnInit {
         field: "startDate",
         headerText: "Start Date",
         visble: true,
+        type: "date",
         format: "yMd",
       },
       {
         field: "duration",
         headerText: "Duration",
+        type: "number",
         visble: true,
         filterbars: this.templateOptions,
       },
@@ -182,7 +202,7 @@ export class TrigreedComponent implements OnInit {
     this.selectionOptions = {
       cellSelectionMode: "Box",
       type: "Multiple",
-      checkboxMode: "ResetOnRowClick",
+      checkboxMode: "Default",
       mode: "Row",
     };
 
@@ -204,17 +224,24 @@ export class TrigreedComponent implements OnInit {
       { text: "Add Next", target: ".e-content", id: "addnext" },
       { text: "Add Child", target: ".e-content", id: "addchild" },
       { separator: true, target: ".e-content" },
-      "Delete",
-      // { text: "Delete Row", target: ".e-content", id: "deleterow" },
+      // "Delete",
+      { text: "Delete Row", target: ".e-content", id: "deleterow" },
       "Edit",
       // { text: "Edit Row", target: ".e-content", id: "editrow" },
-      { text: "Multi Select", target: ".e-content", id: "multiselect" },
+      {
+        text: "Multi Select", target: ".e-content", id: "multiselect", iconCss: 'e-icons e-right'
+      },
+      {
+        text: "Multi Select", target: ".e-content", id: "multiselectSingle",
+      },
       { separator: true, target: ".e-content" },
       { text: "Copy Rows", target: ".e-content", id: "copyrows" },
       { text: "Cut Rows", target: ".e-content", id: "cutrows" },
       { text: "Paste Next", target: ".e-content", id: "pastenext" },
       { text: "Paste Child", target: ".e-content", id: "pastechild" },
     ];
+
+
 
     this.sortSettings = {
       columns: [
@@ -228,7 +255,7 @@ export class TrigreedComponent implements OnInit {
       allowDeleting: true,
       mode: "Dialog",
       newRowPosition: "Below",
-      showDeleteConfirmDialog: true,
+      // showDeleteConfirmDialog: true,
     };
 
     this.editparams = { params: { format: "n" } };
@@ -285,6 +312,8 @@ export class TrigreedComponent implements OnInit {
       ]),
       setTimeout(() => {
         this.disable();
+        document.getElementById("multiselect").style.display = "none";
+
       }, 200);
   }
 
@@ -320,6 +349,7 @@ export class TrigreedComponent implements OnInit {
     var idx: any = args["rowInfo"].rowIndex;
     // A row where right click happened
     let row: Element = args["rowInfo"].row;
+    this.treeGridobject.deleteRow = row;
 
     // Get UID of the clicked row
     let uid: string = row && row.getAttribute("data-uid");
@@ -329,7 +359,8 @@ export class TrigreedComponent implements OnInit {
 
     if (args.item["properties"].id === "deleterow") {
       // Delete selected row
-      this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
+      this.deletetemplate.show();
+      // this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
     } else if (args.item["properties"].id === "copyrows") {
       // Clear clipboard
       this.clipboardData = [];
@@ -346,42 +377,34 @@ export class TrigreedComponent implements OnInit {
         }
       });
     } else if (args.item["properties"].id === "cutrows") {
+      console.log("aaaaaaaaaaaaaaa")
       // Clear clipboard
       this.clipboardData = [];
-
-      for (let data in this.treeGridobject.selectedRows) {
-        // find index from deslected records to selected recoreds
-        const index = this.treeGridobject.selectedRows.indexOf(
-          this.treeGridobject.selectedRows[data]
-        );
-
-        if (index >= 0) {
-          // splice record from selcted records
-          sampleData.splice(index, 1);
-        }
-      }
 
       // Setting up shouldMove to true as it's a cut operation
       this.shouldMove = true;
 
       // Assigning and saving the data to clipboard
-      let copiedObject = this.treeGridObj.grid.getRowObjectFromUID(uid).data;
-      this.treeGridobject.copiedObject = copiedObject;
-
-      for (let htmlRow in this.treeGridobject.selectedHTMLRow) {
+      this.treeGridObj.getSelectedRows().map((rowItem) => {
+        console.log("rowItem", rowItem)
+        let dataUID: string = rowItem.getAttribute("data-uid");
+        let data: any = this.treeGridObj.grid.getRowObjectFromUID(dataUID).data;
+        if (data) {
+          this.clipboardData.unshift(data);
+        }
         this.treeGridObj.deleteRow(
-          <HTMLTableRowElement>this.treeGridobject.selectedHTMLRow[htmlRow]
+          <HTMLTableRowElement>rowItem
         );
-      }
+      });
 
-      this.treeGridobject.copiedRows = [];
-      this.treeGridobject.copiedRows = this.treeGridobject.selectedRows;
-      this.treeGridobject.selectedRows = [];
+
+
+
 
       // copy row menu css
 
-      let style = "pointer-events: none; opacity: 0.6";
-      document.querySelectorAll("li#cutrows")[0].setAttribute("style", style);
+      // let style = "pointer-events: none; opacity: 0.6";
+      // document.querySelectorAll("li#cutrows")[0].setAttribute("style", style);
     } else if (args.item["properties"].id === "pastenext") {
       if (this.clipboardData.length > 0) {
         for (let data in this.clipboardData) {
@@ -411,15 +434,25 @@ export class TrigreedComponent implements OnInit {
 
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "addnext") {
+
+      this.newRecord = {};
+
+      // ej2 angular modal
+      this.template.show();
       // Adding Next Row from the selected row
-      this.presentModalPopupForNewRecord("Below");
+      // this.presentModalPopupForNewRecord("Below");
+      this.addMode = "Below";
       // get Random Data
       // var data = { taskID: this.getRandomID(), duration: 10 };
       // this.treeGridObj.addRecord(data, idx, "Below");
     } else if (args.item["properties"].id === "addchild") {
       // Paste Child  Row from the selected row
 
-      this.presentModalPopupForNewRecord("Child");
+      this.newRecord = {};
+      // this.presentModalPopupForNewRecord("Child");
+      this.template.show();
+      this.addMode = "Child";
+
       // get Random Data
       // var data = { taskID: this.getRandomID(), duration: 10 };
       // this.treeGridObj.addRecord(data, idx, "Child");
@@ -463,9 +496,10 @@ export class TrigreedComponent implements OnInit {
   }
 
   // check box selected items
-  getRowData(args: any): void {}
+  getRowData(args: any): void { }
 
   contextMenuOpen(arg?: BeforeOpenCloseEventArgs): void {
+
     /* Checked if any row/record is being cut or copied,
     / based on that, it activates / deactivates the paste next and paste child menu items.
     */
@@ -607,39 +641,65 @@ export class TrigreedComponent implements OnInit {
 
   // row selected
   rowSelected(args: RowSelectEventArgs) {
-    // Selected Rows Create array children and single record
+    console.log("args", args);
+    if (args['rowIndexes']) {
+      if (args['rowIndexes'].length == 1) {
+        document.getElementById("multiselect").style.display = "none";
+        document.getElementById("multiselectSingle").style.display = "block";
+      } else {
+        document.getElementById("multiselect").style.display = "block";
+        document.getElementById("multiselectSingle").style.display = "none";
+      }
+    } else {
+      document.getElementById("multiselect").style.display = "none";
+      document.getElementById("multiselectSingle").style.display = "block";
+    }
 
-    this.treeGridobject.selectedRows.push(args.data["taskData"]);
+    // // Selected Rows Create array children and single record
 
-    // Multiple record delete
+    // this.treeGridobject.selectedRows.push(args.data["taskData"]);
 
-    this.treeGridobject.selectedHTMLRow.push(args.row);
+    // // Multiple record delete
+
+    // this.treeGridobject.selectedHTMLRow.push(args.row);
   }
 
   // row deselected and splice of array
 
   rowDeselected(args: RowDeselectEventArgs) {
+    if (args['rowIndexes']) {
+      if (args['rowIndexes'].length == 1) {
+        document.getElementById("multiselect").style.display = "none";
+        document.getElementById("multiselectSingle").style.display = "block";
+      } else {
+        document.getElementById("multiselect").style.display = "block";
+        document.getElementById("multiselectSingle").style.display = "none";
+        //Update object's name property.
+        // this.contextMenuItems[objIndex].iconCss = "Laila"
+      }
+    }
     // DeSelected Rows Splice object from  array children and single record
     // find index from deslected records to selected recoreds find
-    const index = this.treeGridobject.selectedRows.indexOf(
-      args.data["taskData"]
-    );
+    // const index = this.treeGridobject.selectedRows.indexOf(
+    //   args.data["taskData"]
+    // );
 
-    if (index >= 0) {
-      // splice record from selcted records
-      this.treeGridobject.selectedRows.splice(index, 1);
-    }
 
-    // Deseleted record splice
+    // if (index >= 0) {
+    //   // splice record from selcted records
+    //   this.treeGridobject.selectedRows.splice(index, 1);
+    // }
 
-    const indexs = this.treeGridobject.selectedHTMLRow.indexOf(
-      args.data["taskData"]
-    );
+    // // Deseleted record splice
 
-    if (indexs >= 0) {
-      // splice record from selcted records
-      this.treeGridobject.selectedHTMLRow.splice(index, 1);
-    }
+    // const indexs = this.treeGridobject.selectedHTMLRow.indexOf(
+    //   args.data["taskData"]
+    // );
+
+    // if (indexs >= 0) {
+    //   // splice record from selcted records
+    //   this.treeGridobject.selectedHTMLRow.splice(index, 1);
+    // }
   }
 
   // ! Delete Column
@@ -743,19 +803,36 @@ export class TrigreedComponent implements OnInit {
     // this.treeGridObj.refreshColumns();
   }
 
-  public presentModalPopupForNewRecord(mode: string): void {
-    console.log("Mode = ", mode);
-    this.addMode = mode;
-    $("#modalAddRow").modal("show");
-  }
+  // public presentModalPopupForNewRecord(mode: string): void {
+  //   console.log("Mode = ", mode);
+  //   this.addMode = mode;
+  //   $("#modalAddRow").modal("show");
+  // }
 
   public saveNewRecord(): void {
-    console.log("New Record = ", this.newRecord);
     this.treeGridObj.addRecord(
       this.newRecord,
       this.clickedRowIndex,
       <RowPosition>this.addMode
     );
-    $("#modalAddRow").modal("hide");
+    this.hideAddTaskModal();
+  }
+
+  // hide add popup modal
+
+  hideAddTaskModal() {
+    // hide add modal
+    this.template.hide();
+  }
+
+  // delete selected record
+  deleteSelectedRecord() {
+    this.treeGridObj.deleteRow(<HTMLTableRowElement>this.treeGridobject.deleteRow);
+    this.deletetemplate.hide();
+  }
+
+  // deletepopupHide
+  cancleDeletePopup() {
+    this.deletetemplate.hide();
   }
 }

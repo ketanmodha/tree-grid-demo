@@ -12,3 +12,9 @@
 .span.e-menu-icon.e-icons.e-edit {
   color: white !important;
 }
+.copyrow {
+  color: red !important;
+}
+.e-right:before {
+  content: "\e7ff";
+}

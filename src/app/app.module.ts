@@ -14,6 +14,7 @@ import { AppRoutingModule } from "./app.routing";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { DropDownListAllModule } from '@syncfusion/ej2-angular-dropdowns';
 import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
+import { DialogModule } from '@syncfusion/ej2-angular-popups';
 
 
 
@@ -32,7 +33,8 @@ import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
     FormsModule,
     ReactiveFormsModule,
     DropDownListAllModule,
-    CheckBoxModule
+    CheckBoxModule,
+    DialogModule
   ],
   providers: [PageService,
     SortService,
