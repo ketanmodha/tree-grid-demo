@@ -172,7 +172,8 @@ export class TrigreedComponent implements OnInit {
         headerText: "Task Id",
         type: "number",
         visble: true,
-        isFrozen: true
+        isFrozen: true,
+        validationRules: { required: true, number: true },
       },
       {
         field: "taskName",
@@ -200,7 +201,7 @@ export class TrigreedComponent implements OnInit {
     this.toolbarOption = ["ColumnChooser"];
     this.selectionOptions = {
       cellSelectionMode: "Box",
-      type: "Multiple",
+      type: "Single",
       checkboxMode: "Default",
       mode: "Row",
     };
@@ -360,7 +361,35 @@ export class TrigreedComponent implements OnInit {
       // Delete selected row
       this.deletetemplate.show();
       // this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
-    } else if (args.item["properties"].id === "copyrows") {
+    } else if (args.item["properties"].id === "multiselectSingle") {
+      this.selectionOptions = {
+        type: "Multiple",
+        cellSelectionMode: "Box",
+        checkboxMode: "Default",
+        mode: "Row",
+      }
+      console.log(this.selectionOptions)
+
+      // multi select on off 
+      document.getElementById("multiselect").style.display = "block";
+
+      document.getElementById("multiselectSingle").style.display = "none";
+    }
+    else if (args.item["properties"].id === "multiselect") {
+      console.log(this.selectionOptions)
+      // multi select on off 
+      this.selectionOptions = {
+        cellSelectionMode: "Box",
+        type: "Single",
+        checkboxMode: "Default",
+        mode: "Row",
+      }
+
+      document.getElementById("multiselect").style.display = "none";
+
+      document.getElementById("multiselectSingle").style.display = "block";
+    }
+    else if (args.item["properties"].id === "copyrows") {
       // Clear clipboard
       this.clipboardData = [];
 
@@ -369,14 +398,16 @@ export class TrigreedComponent implements OnInit {
 
       // Assigning and saving the data to clipboard
       this.treeGridObj.getSelectedRows().map((rowItem) => {
+        rowItem.setAttribute("ID", "copyRowBackGround");
+        console.log(rowItem)
         let dataUID: string = rowItem.getAttribute("data-uid");
         let data: any = this.treeGridObj.grid.getRowObjectFromUID(dataUID).data;
         if (data) {
           this.clipboardData.unshift(data);
         }
+
       });
     } else if (args.item["properties"].id === "cutrows") {
-      console.log("aaaaaaaaaaaaaaa")
       // Clear clipboard
       this.clipboardData = [];
 
@@ -385,7 +416,8 @@ export class TrigreedComponent implements OnInit {
 
       // Assigning and saving the data to clipboard
       this.treeGridObj.getSelectedRows().map((rowItem) => {
-        console.log("rowItem", rowItem)
+        rowItem.setAttribute("ID", "copyRowBackGround");
+        this.treeGridobject.selectedRows.push(rowItem);
         let dataUID: string = rowItem.getAttribute("data-uid");
         let data: any = this.treeGridObj.grid.getRowObjectFromUID(dataUID).data;
         if (data) {
@@ -395,16 +427,21 @@ export class TrigreedComponent implements OnInit {
           <HTMLTableRowElement>rowItem
         );
       });
-
-
-
-
-
       // copy row menu css
 
       // let style = "pointer-events: none; opacity: 0.6";
       // document.querySelectorAll("li#cutrows")[0].setAttribute("style", style);
     } else if (args.item["properties"].id === "pastenext") {
+
+      // After cut row then paste next remove cut row
+      if (this.treeGridobject.selectedRows.length > 0) {
+        this.treeGridobject.selectedRows.forEach(element => {
+          this.treeGridObj.deleteRow(
+            <HTMLTableRowElement>element
+          );
+        });
+      }
+
       if (this.clipboardData.length > 0) {
         for (let data in this.clipboardData) {
           let record = this.shouldMove
@@ -417,6 +454,9 @@ export class TrigreedComponent implements OnInit {
         }
       }
 
+
+
+
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "pastechild") {
       if (this.clipboardData.length > 0) {
@@ -426,11 +466,21 @@ export class TrigreedComponent implements OnInit {
             : Object.assign({}, this.clipboardData[data]);
 
           if (!this.shouldMove) record.taskID = this.getRandomID();
-
+          console.log(idx)
+          let index = idx - 1;
+          console.log(index);
           this.treeGridObj.addRecord(record, idx, "Child");
         }
       }
 
+      // // After cut row then paste child remove cut row
+      // if (this.treeGridobject.selectedRows.length > 0) {
+      //   this.treeGridobject.selectedRows.forEach(element => {
+      //     this.treeGridObj.deleteRow(
+      //       <HTMLTableRowElement>element
+      //     );
+      //   });
+      // }
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "addnext") {
 
@@ -640,19 +690,18 @@ export class TrigreedComponent implements OnInit {
 
   // row selected
   rowSelected(args: RowSelectEventArgs) {
-    console.log("args", args);
-    if (args['rowIndexes']) {
-      if (args['rowIndexes'].length == 1) {
-        document.getElementById("multiselect").style.display = "none";
-        document.getElementById("multiselectSingle").style.display = "block";
-      } else {
-        document.getElementById("multiselect").style.display = "block";
-        document.getElementById("multiselectSingle").style.display = "none";
-      }
-    } else {
-      document.getElementById("multiselect").style.display = "none";
-      document.getElementById("multiselectSingle").style.display = "block";
-    }
+    // if (args['rowIndexes']) {
+    //   if (args['rowIndexes'].length == 1) {
+    //     document.getElementById("multiselect").style.display = "none";
+    //     document.getElementById("multiselectSingle").style.display = "block";
+    //   } else {
+    //     document.getElementById("multiselect").style.display = "block";
+    //     document.getElementById("multiselectSingle").style.display = "none";
+    //   }
+    // } else {
+    //   document.getElementById("multiselect").style.display = "none";
+    //   document.getElementById("multiselectSingle").style.display = "block";
+    // }
 
     // // Selected Rows Create array children and single record
 
@@ -666,17 +715,17 @@ export class TrigreedComponent implements OnInit {
   // row deselected and splice of array
 
   rowDeselected(args: RowDeselectEventArgs) {
-    if (args['rowIndexes']) {
-      if (args['rowIndexes'].length == 1) {
-        document.getElementById("multiselect").style.display = "none";
-        document.getElementById("multiselectSingle").style.display = "block";
-      } else {
-        document.getElementById("multiselect").style.display = "block";
-        document.getElementById("multiselectSingle").style.display = "none";
-        //Update object's name property.
-        // this.contextMenuItems[objIndex].iconCss = "Laila"
-      }
-    }
+    // if (args['rowIndexes']) {
+    //   if (args['rowIndexes'].length == 1) {
+    //     document.getElementById("multiselect").style.display = "none";
+    //     document.getElementById("multiselectSingle").style.display = "block";
+    //   } else {
+    //     document.getElementById("multiselect").style.display = "block";
+    //     document.getElementById("multiselectSingle").style.display = "none";
+    //     //Update object's name property.
+    //     // this.contextMenuItems[objIndex].iconCss = "Laila"
+    //   }
+    // }
     // DeSelected Rows Splice object from  array children and single record
     // find index from deslected records to selected recoreds find
     // const index = this.treeGridobject.selectedRows.indexOf(

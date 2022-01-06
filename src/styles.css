@@ -18,3 +18,12 @@
 .e-right:before {
   content: "\e7ff";
 }
+#copyRowBackGround {
+  background-color: #e3165ab9 !important;
+}
+#cutRowBorder {
+  border-style: dashed !important;
+}
+.e-treegrid td.e-active {
+  background-color: #e3165a1a !important;
+}
