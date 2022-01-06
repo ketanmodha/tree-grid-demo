@@ -44,7 +44,6 @@ import {
 } from "@syncfusion/ej2-angular-dropdowns";
 import { CheckBoxComponent } from "@syncfusion/ej2-angular-buttons";
 import { DialogComponent } from "@syncfusion/ej2-angular-popups";
-import { type } from "os";
 
 
 declare var $: any;
