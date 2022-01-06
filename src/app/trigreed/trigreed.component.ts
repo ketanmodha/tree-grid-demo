@@ -226,8 +226,7 @@ export class TrigreedComponent implements OnInit {
       { separator: true, target: ".e-content" },
       // "Delete",
       { text: "Delete Row", target: ".e-content", id: "deleterow" },
-      "Edit",
-      // { text: "Edit Row", target: ".e-content", id: "editrow" },
+      { text: "Edit Row", target: ".e-content", id: "editrow" },
       {
         text: "Multi Select", target: ".e-content", id: "multiselect", iconCss: 'e-icons e-right'
       },
@@ -240,8 +239,6 @@ export class TrigreedComponent implements OnInit {
       { text: "Paste Next", target: ".e-content", id: "pastenext" },
       { text: "Paste Child", target: ".e-content", id: "pastechild" },
     ];
-
-
 
     this.sortSettings = {
       columns: [
@@ -346,7 +343,10 @@ export class TrigreedComponent implements OnInit {
   }
 
   contextMenuClick(args?: MenuEventArgs): void {
+    console.log("args>>>>>>>>>>", args)
     var idx: any = args["rowInfo"].rowIndex;
+    console.log("args>>>>>>>>>>", idx)
+
     // A row where right click happened
     let row: Element = args["rowInfo"].row;
     this.treeGridobject.deleteRow = row;
@@ -362,6 +362,7 @@ export class TrigreedComponent implements OnInit {
       this.deletetemplate.show();
       // this.treeGridObj.deleteRow(<HTMLTableRowElement>row);
     } else if (args.item["properties"].id === "multiselectSingle") {
+      // Enable Multi Select
       this.selectionOptions = {
         type: "Multiple",
         cellSelectionMode: "Box",
@@ -376,7 +377,7 @@ export class TrigreedComponent implements OnInit {
       document.getElementById("multiselectSingle").style.display = "none";
     }
     else if (args.item["properties"].id === "multiselect") {
-      console.log(this.selectionOptions)
+
       // multi select on off 
       this.selectionOptions = {
         cellSelectionMode: "Box",
@@ -388,6 +389,9 @@ export class TrigreedComponent implements OnInit {
       document.getElementById("multiselect").style.display = "none";
 
       document.getElementById("multiselectSingle").style.display = "block";
+    }
+    else if (args.item["properties"].id === "editrow") {
+      this.treeGridObj.startEdit();
     }
     else if (args.item["properties"].id === "copyrows") {
       // Clear clipboard
@@ -433,14 +437,14 @@ export class TrigreedComponent implements OnInit {
       // document.querySelectorAll("li#cutrows")[0].setAttribute("style", style);
     } else if (args.item["properties"].id === "pastenext") {
 
-      // After cut row then paste next remove cut row
-      if (this.treeGridobject.selectedRows.length > 0) {
-        this.treeGridobject.selectedRows.forEach(element => {
-          this.treeGridObj.deleteRow(
-            <HTMLTableRowElement>element
-          );
-        });
-      }
+      // // After cut row then paste next remove cut row
+      // if (this.treeGridobject.selectedRows.length > 0) {
+      //   this.treeGridobject.selectedRows.forEach(element => {
+      //     this.treeGridObj.deleteRow(
+      //       <HTMLTableRowElement>element
+      //     );
+      //   });
+      // }
 
       if (this.clipboardData.length > 0) {
         for (let data in this.clipboardData) {
@@ -453,10 +457,6 @@ export class TrigreedComponent implements OnInit {
           this.treeGridObj.addRecord(record, idx, "Below");
         }
       }
-
-
-
-
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "pastechild") {
       if (this.clipboardData.length > 0) {
@@ -473,14 +473,16 @@ export class TrigreedComponent implements OnInit {
         }
       }
 
-      // // After cut row then paste child remove cut row
-      // if (this.treeGridobject.selectedRows.length > 0) {
-      //   this.treeGridobject.selectedRows.forEach(element => {
-      //     this.treeGridObj.deleteRow(
-      //       <HTMLTableRowElement>element
-      //     );
-      //   });
-      // }
+      // After cut row then paste next remove cut row
+      if (this.treeGridobject.selectedRows.length > 0) {
+        this.treeGridobject.selectedRows.forEach(element => {
+          this.treeGridObj.deleteRow(
+            <HTMLTableRowElement>element
+          );
+        });
+      }
+
+
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "addnext") {
 
