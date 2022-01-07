@@ -201,7 +201,7 @@ export class TrigreedComponent implements OnInit {
     this.toolbarOption = ["ColumnChooser"];
     this.selectionOptions = {
       cellSelectionMode: "Box",
-      type: "Single",
+      type: "Multiple",
       checkboxMode: "Default",
       mode: "Row",
     };
@@ -314,7 +314,7 @@ export class TrigreedComponent implements OnInit {
       ]),
       setTimeout(() => {
         this.disable();
-        document.getElementById("multiselect").style.display = "none";
+        document.getElementById("multiselectSingle").style.display = "none";
       }, 200);
   }
 
@@ -347,9 +347,9 @@ export class TrigreedComponent implements OnInit {
   }
 
   contextMenuClick(args?: MenuEventArgs): void {
-    console.log("args>>>>>>>>>>", args);
+    console.log("args", args);
     var idx: any = args["rowInfo"].rowIndex;
-    console.log("args>>>>>>>>>>", idx);
+    console.log(idx)
 
     // A row where right click happened
     let row: Element = args["rowInfo"].row;
@@ -426,8 +426,10 @@ export class TrigreedComponent implements OnInit {
         if (data) {
           this.clipboardData.unshift(data);
         }
-        this.treeGridObj.deleteRow(<HTMLTableRowElement>rowItem);
+        // this.treeGridObj.deleteRow(<HTMLTableRowElement>rowItem);
       });
+
+      console.log("this.data>>>>>>>", this.clipboardData);
       // copy row menu css
 
       // let style = "pointer-events: none; opacity: 0.6";
@@ -455,20 +457,8 @@ export class TrigreedComponent implements OnInit {
       }
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "pastechild") {
-      if (this.clipboardData.length > 0) {
-        for (let data in this.clipboardData) {
-          let record = this.shouldMove
-            ? this.clipboardData[data]
-            : Object.assign({}, this.clipboardData[data]);
 
-          if (!this.shouldMove) record.taskID = this.getRandomID();
-          console.log(idx);
-          let index = idx - 1;
-          console.log(index);
-          this.treeGridObj.addRecord(record, idx, "Child");
-        }
-      }
-
+      console.log("this.data>>>>>>>", this.data);
       // After cut row then paste next remove cut row
       if (this.treeGridobject.selectedRows.length > 0) {
         this.treeGridobject.selectedRows.forEach((element) => {
@@ -476,6 +466,20 @@ export class TrigreedComponent implements OnInit {
         });
       }
 
+      console.log("this.data>>>>>>>", this.data);
+      console.log("this.data before delete", this.data);
+
+
+      if (this.clipboardData.length > 0) {
+        for (let data in this.clipboardData) {
+          let record = this.shouldMove
+            ? this.clipboardData[data]
+            : Object.assign({}, this.clipboardData[data]);
+          if (!this.shouldMove) record.taskID = this.getRandomID();
+          let index = idx - 1;
+          this.treeGridObj.addRecord(record, idx, "Child");
+        }
+      }
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "addnext") {
       this.newRecord = {};
@@ -538,8 +542,9 @@ export class TrigreedComponent implements OnInit {
     }
   }
 
+
   // check box selected items
-  getRowData(args: any): void {}
+  getRowData(args: any): void { }
 
   contextMenuOpen(arg?: BeforeOpenCloseEventArgs): void {
     /* Checked if any row/record is being cut or copied,
