@@ -251,6 +251,7 @@ export class TrigreedComponent implements OnInit {
         { field: "taskName", direction: "Ascending" },
       ],
     };
+
     this.editSettings = {
       allowEditing: true,
       allowAdding: true,
@@ -289,7 +290,9 @@ export class TrigreedComponent implements OnInit {
         this.dropDownFilter.appendTo("#duration");
       },
     };
+
     this.fields1 = { text: "mode", value: "id" };
+
     this.d1data = [
       { id: "Parent", mode: "Parent" },
       { id: "Child", mode: "Child" },
@@ -306,6 +309,7 @@ export class TrigreedComponent implements OnInit {
       { id: "startDate", name: "Start Date" },
       { id: "duration", name: "Duration" },
     ]),
+
       (this.d3data = [
         { id: "right", name: "right" },
         { id: "left", name: "left" },
@@ -316,6 +320,10 @@ export class TrigreedComponent implements OnInit {
         this.disable();
         document.getElementById("multiselectSingle").style.display = "none";
       }, 200);
+  }
+
+  clickEvent() {
+    console.log("aaaaaaaaaaaaaaaaaaa")
   }
 
   change(e: ChangeEventArgs): void {
@@ -344,6 +352,10 @@ export class TrigreedComponent implements OnInit {
     } else {
       args.cancel = true;
     }
+  }
+
+  commandClick(args?: MenuEventArgs) {
+    console.log("args?", args)
   }
 
   contextMenuClick(args?: MenuEventArgs): void {
@@ -420,12 +432,13 @@ export class TrigreedComponent implements OnInit {
       // Assigning and saving the data to clipboard
       this.treeGridObj.getSelectedRows().map((rowItem) => {
         rowItem.setAttribute("ID", "copyRowBackGround");
-        this.treeGridobject.selectedRows.push(rowItem);
+        this.treeGridobject.selectedRows.unshift(rowItem);
         let dataUID: string = rowItem.getAttribute("data-uid");
         let data: any = this.treeGridObj.grid.getRowObjectFromUID(dataUID).data;
         if (data) {
           this.clipboardData.unshift(data);
         }
+
         // this.treeGridObj.deleteRow(<HTMLTableRowElement>rowItem);
       });
 
@@ -458,17 +471,14 @@ export class TrigreedComponent implements OnInit {
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "pastechild") {
 
-      console.log("this.data>>>>>>>", this.data);
       // After cut row then paste next remove cut row
       if (this.treeGridobject.selectedRows.length > 0) {
-        this.treeGridobject.selectedRows.forEach((element) => {
-          this.treeGridObj.deleteRow(<HTMLTableRowElement>element);
+        this.treeGridobject.selectedRows.forEach(element => {
+          this.treeGridObj.deleteRow(
+            <HTMLTableRowElement>element
+          );
         });
       }
-
-      console.log("this.data>>>>>>>", this.data);
-      console.log("this.data before delete", this.data);
-
 
       if (this.clipboardData.length > 0) {
         for (let data in this.clipboardData) {
@@ -476,10 +486,13 @@ export class TrigreedComponent implements OnInit {
             ? this.clipboardData[data]
             : Object.assign({}, this.clipboardData[data]);
           if (!this.shouldMove) record.taskID = this.getRandomID();
-          let index = idx - 1;
+          let index = idx + 1;
           this.treeGridObj.addRecord(record, idx, "Child");
         }
       }
+
+      console.log(this.data)
+
       if (this.shouldMove) this.clipboardData = [];
     } else if (args.item["properties"].id === "addnext") {
       this.newRecord = {};
@@ -688,55 +701,15 @@ export class TrigreedComponent implements OnInit {
 
   // row selected
   rowSelected(args: RowSelectEventArgs) {
-    // if (args['rowIndexes']) {
-    //   if (args['rowIndexes'].length == 1) {
-    //     document.getElementById("multiselect").style.display = "none";
-    //     document.getElementById("multiselectSingle").style.display = "block";
-    //   } else {
-    //     document.getElementById("multiselect").style.display = "block";
-    //     document.getElementById("multiselectSingle").style.display = "none";
-    //   }
-    // } else {
-    //   document.getElementById("multiselect").style.display = "none";
-    //   document.getElementById("multiselectSingle").style.display = "block";
-    // }
-    // // Selected Rows Create array children and single record
-    // this.treeGridobject.selectedRows.push(args.data["taskData"]);
-    // // Multiple record delete
-    // this.treeGridobject.selectedHTMLRow.push(args.row);
+    // console.log("args", args);
+    // alert("row index: " + " " + (args.row as HTMLTableRowElement).getAttribute('aria-rowindex'));
+    // alert("column index: " + " " + args.target.closest('td').getAttribute('aria-colindex'));
   }
 
   // row deselected and splice of array
 
   rowDeselected(args: RowDeselectEventArgs) {
-    // if (args['rowIndexes']) {
-    //   if (args['rowIndexes'].length == 1) {
-    //     document.getElementById("multiselect").style.display = "none";
-    //     document.getElementById("multiselectSingle").style.display = "block";
-    //   } else {
-    //     document.getElementById("multiselect").style.display = "block";
-    //     document.getElementById("multiselectSingle").style.display = "none";
-    //     //Update object's name property.
-    //     // this.contextMenuItems[objIndex].iconCss = "Laila"
-    //   }
-    // }
-    // DeSelected Rows Splice object from  array children and single record
-    // find index from deslected records to selected recoreds find
-    // const index = this.treeGridobject.selectedRows.indexOf(
-    //   args.data["taskData"]
-    // );
-    // if (index >= 0) {
-    //   // splice record from selcted records
-    //   this.treeGridobject.selectedRows.splice(index, 1);
-    // }
-    // // Deseleted record splice
-    // const indexs = this.treeGridobject.selectedHTMLRow.indexOf(
-    //   args.data["taskData"]
-    // );
-    // if (indexs >= 0) {
-    //   // splice record from selcted records
-    //   this.treeGridobject.selectedHTMLRow.splice(index, 1);
-    // }
+
   }
 
   // ! Delete Column
@@ -835,16 +808,7 @@ export class TrigreedComponent implements OnInit {
   public changeAlignment(e: ChangeEventArgs): void {
     let alignment: any = e.value;
     this.treeGridobject.columnAlign = e.value;
-    // this.treeGridObj.getColumnByField(columnName).textAlign = alignment;
-    // console.log(this.treeGridObj.getColumnByField(columnName))
-    // this.treeGridObj.refreshColumns();
   }
-
-  // public presentModalPopupForNewRecord(mode: string): void {
-  //   console.log("Mode = ", mode);
-  //   this.addMode = mode;
-  //   $("#modalAddRow").modal("show");
-  // }
 
   public saveNewRecord(): void {
     this.treeGridObj.addRecord(
