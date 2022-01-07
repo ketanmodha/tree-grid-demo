@@ -152,16 +152,29 @@ export class TrigreedComponent implements OnInit {
     { id: "Center", name: "Center" },
   ];
 
-  // ej2 angular modal
-  @ViewChild("template", { static: false }) template: DialogComponent;
+  // ej2 angularDialogComponent
+  @ViewChild("template", { static: false })
+  template: DialogComponent;
   @ViewChild("deletetemplate", { static: false })
   deletetemplate: DialogComponent;
+  @ViewChild("addTemplate", { static: false })
+  addTemplate: DialogComponent;
+  public animationSettings: Object = { effect: 'SlideTop', duration: 400, delay: 0 };
+  @ViewChild("deleteColumntemplate", { static: false })
+  deleteColumntemplate: DialogComponent;
+  @ViewChild("filterColumntemplate", { static: false })
+  filterColumntemplate: DialogComponent;
+  @ViewChild("multisortingtemplate", { static: false })
+  multisortingtemplate: DialogComponent;
+  @ViewChild("editcolumntemplate", { static: false })
+  editcolumntemplate: DialogComponent;
 
   // Create element reference for dialog target element.
   @ViewChild("container", { read: ElementRef, static: false })
   container: ElementRef;
 
   ngOnInit(): void {
+    this.treeGridobject.singleRowSelection = [];
     this.data = sampleData;
 
     // custom attribut for css
@@ -201,7 +214,7 @@ export class TrigreedComponent implements OnInit {
     ];
 
     // toolbar option like column chooser
-    this.toolbarOption = ["ColumnChooser"];
+    // this.toolbarOption = ["ColumnChooser"];
 
     // selection option like single or multiple
     this.selectionOptions = {
@@ -336,7 +349,7 @@ export class TrigreedComponent implements OnInit {
         { id: "justify", name: "justify" },
       ]),
       setTimeout(() => {
-        this.disable();
+        // this.disable();
         document.getElementById("multiselectSingle").style.display = "none";
       }, 200);
   }
@@ -380,11 +393,15 @@ export class TrigreedComponent implements OnInit {
     let row: Element = args["rowInfo"].row;
     this.treeGridobject.deleteRow = row;
 
+
+
     // Get UID of the clicked row
     let uid: string = row && row.getAttribute("data-uid");
 
     // Get Index of clicked Row
     this.clickedRowIndex = row && parseInt(row.getAttribute("aria-rowindex"));
+
+    // ************************* Row Context Menu ************************ //
 
     // ****** Delete Row ****** //
     if (args.item["properties"].id === "deleterow") {
@@ -432,11 +449,19 @@ export class TrigreedComponent implements OnInit {
 
       // Setting up shouldMove to false as it's a copy operation
       this.shouldMove = false;
+      this.copiedRecord = false;
+
+      // remove css when single selection
+      if (this.treeGridobject.singleRowSelection.length > 0) {
+        this.treeGridobject.singleRowSelection.map((rowItemSingleSelection) => {
+          rowItemSingleSelection.removeAttribute("id");
+        });
+      }
 
       // Assigning and saving the data to clipboard
       this.treeGridObj.getSelectedRows().map((rowItem) => {
         rowItem.setAttribute("ID", "copyRowBackGround");
-        console.log(rowItem);
+        this.treeGridobject.singleRowSelection.push(rowItem)
         let dataUID: string = rowItem.getAttribute("data-uid");
         let data: any = this.treeGridObj.grid.getRowObjectFromUID(dataUID).data;
         if (data) {
@@ -448,9 +473,17 @@ export class TrigreedComponent implements OnInit {
     } else if (args.item["properties"].id === "cutrows") {
       // Clear clipboard
 
+      // remove css when single selection
+      if (this.treeGridobject.singleRowSelection.length > 0) {
+        this.treeGridobject.singleRowSelection.map((rowItemSingleSelection) => {
+          rowItemSingleSelection.removeAttribute("id");
+        });
+      }
+
       // Assigning and saving the data to clipboard
       this.treeGridObj.getSelectedRows().map((rowItem) => {
-        rowItem.setAttribute("ID", "copyRowBackGround");
+        rowItem.setAttribute("ID", "copyRowBackGroundCut");
+        this.treeGridobject.singleRowSelection.push(rowItem)
         let dataUID: string = rowItem.getAttribute("data-uid");
         let data: any = this.treeGridObj.grid.getRowObjectFromUID(dataUID).data;
         if (data) {
@@ -536,6 +569,8 @@ export class TrigreedComponent implements OnInit {
       // var data = { taskID: this.getRandomID(), duration: 10 };
       // this.treeGridObj.addRecord(data, idx, "Child");
 
+
+      // ************************* Column Context Menu ************************ //
       // ****** Rename column ****** //
     } else if (args.item["properties"].id == "ranamecolumn") {
       // Rename column field
@@ -550,13 +585,15 @@ export class TrigreedComponent implements OnInit {
       args["rowInfo"].target.setAttribute("class", "headerColumnStyle");
 
       //  Rename column text and styling property modal
-      $("#exampleModal").modal("show");
+      // $("#exampleModal").modal("show");
+      this.editcolumntemplate.show();
 
 
       // ****** Delete Column ****** //
     } else if (args.item["properties"].id == "deletecolumn") {
       // Delete Column Modal Open Function
-      this.deleteColumnDialog();
+
+      this.deleteColumntemplate.show();
 
       // Delete column Field
       this.treeGridobject.deleteField = args["column"].field;
@@ -570,18 +607,28 @@ export class TrigreedComponent implements OnInit {
 
       // ****** Add Column  ****** //
     } else if (args.item["properties"].id == "addcolumn") {
-      // Add new Column Function
-      this.onClick();
+
+      // Add new Column show
+      this.addTemplate.show();
+      this.columnName = null;
 
       // ****** Filter Column  ****** //
     } else if (args.item["properties"].id == "filtercolumn") {
       // Filter type modal show
-      $("#filterModal").modal("show");
+
+      this.filterColumntemplate.show();
 
       // ****** Multi Sort  ****** //
     } else if (args.item["properties"].id == "multisort") {
       // Multi Sorting modal show
+      this.multisortingtemplate.show()
       $("#multisorting").modal("show");
+
+      // ****** column chooser popup  ****** //
+    } else if (args.item["properties"].id == "selectcolumn") {
+      // open column chooser on click event
+      this.treeGridObj.columnChooserModule.openColumnChooser();
+
     }
   }
 
@@ -614,7 +661,7 @@ export class TrigreedComponent implements OnInit {
     }
     const column = this.treeGridObj.getColumnByField(this.headerText);
     column.headerText = this.changeHeader;
-    // this.treeGridObj.refreshColumns();
+    this.treeGridObj.refreshColumns();
     setTimeout(() => {
       this.stylingCell();
     }, 500);
@@ -624,7 +671,8 @@ export class TrigreedComponent implements OnInit {
 
     // args['rowInfo'].target.setAttribute('class', 'headerColumnStyle');
 
-    $("#exampleModal").modal("hide");
+    this.editcolumntemplate.hide()
+    // $("#exampleModal").modal("hide");
   }
 
   // ! Set Style
@@ -652,12 +700,6 @@ export class TrigreedComponent implements OnInit {
         }
       }
     }
-  }
-
-  //! add new column
-  onClick() {
-    $("#exampleModalAdd").modal("show");
-    this.columnName = null;
   }
 
   //! get random Id
@@ -696,7 +738,19 @@ export class TrigreedComponent implements OnInit {
       });
       this.treeGridObj.refreshColumns();
     }
-    $("#exampleModalAdd").modal("hide");
+    this.addTemplate.hide();
+  }
+
+  // add dialog hide
+  addDialgHide(parameter) {
+    if (parameter == "deleteColumn") {
+      this.deleteColumntemplate.hide();
+    } else if (parameter == "editColumn") {
+      this.editcolumntemplate.hide();
+    }
+    else {
+      this.addTemplate.hide();
+    }
   }
 
   disable() {
@@ -740,17 +794,13 @@ export class TrigreedComponent implements OnInit {
 
   }
 
-  // ! Delete Column
-
-  deleteColumnDialog() {
-    $("#exampleModalDelete").modal("show");
-  }
+  // delete column
 
   deleteColumn() {
     this.treeGridObj.columns.findIndex((i, x) => {
       if (i.field == this.treeGridobject.deleteField) {
         this.treeGridObj.columns.splice(x, 1);
-        $("#exampleModalDelete").modal("hide");
+        this.deleteColumntemplate.hide();
         this.treeGridObj.refreshColumns();
       }
     });
@@ -759,6 +809,7 @@ export class TrigreedComponent implements OnInit {
   // ! Multi Sorting Functions Start
 
   public onClick1(e: MouseEvent): void {
+    console.log("wwwwwwwwwwwwwwwwwwww", e)
     if (this.taskID.checked) {
       this.treeGridObj.sortByColumn("taskID", "Ascending", true);
     } else {

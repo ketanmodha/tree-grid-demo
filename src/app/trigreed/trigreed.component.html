@@ -2,6 +2,7 @@
 	<div class="row">
 		<div class="col-md-12">
 			<h5 class="mt-5 text-center">TreeGrid Demo</h5>
+
 			<div class="e-resizable mt-5">
 				<!-- <div style="text-align: end;">
 					<button id='add' class="btn btn mb-2 flot-right" style="background: #80808087;"
@@ -36,304 +37,6 @@
 						<!-- [filterBarTemplate]="templateOptions" -->
 					</e-columns>
 				</ejs-treegrid>
-			</div>
-		</div>
-		<!-- <div class="col-md-12 property-section">
-			<div class="property-panel-section" style="margin-top:50px">
-				<div class="property-panel-header">
-					Properties
-				</div>
-				<table id="property" class="property-panel-table mt-5" title="Properties" style="width: 100%">
-					<tr style="height: 50px">
-						<td>
-							<div>
-								Hierarchy Mode
-							</div>
-						</td>
-						<td>
-							<div>
-								<ejs-dropdownlist #dropdown1 id='mode' width='100px' [dataSource]='d1data'
-									[fields]='fields1' value='Parent' (change)="change($event)"></ejs-dropdownlist>
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
-		</div> -->
-	</div>
-</div>
-
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">
-					Change column header Text
-				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="mb-3">
-					<label for="exampleFormControlInput1" class="form-label">
-						Header Text
-					</label>
-					<input type="text" class="form-control" id="exampleFormControlInput1" [(ngModel)]="changeHeader"
-						name="changeHeader">
-				</div>
-				<table id="property" class="property-panel-table" title="Properties" style="width: 100%">
-					<!-- <tr style="height: 50px">
-						<td style="width: 20%">
-							<div style="padding-top: 10px">
-								Column
-							</div>
-						</td>
-						<td style="width: 80%;padding-right: 10px">
-							<div>
-								<ejs-dropdownlist #dropdown2 id='ddlelement' width='120px' [dataSource]='d2data'
-									[fields]='ddlfields' value='taskID' (change)="onChange($event)"></ejs-dropdownlist>
-							</div>
-						</td>
-					</tr> -->
-					<tr>
-						<td style="width: 50%">
-							<div>
-								Column Alignment
-							</div>
-						</td>
-						<td style="width: 50%;padding: 10px 10px 10px 0px">
-							<div>
-								<ejs-dropdownlist #dropdown3 id='element' width='120px' [dataSource]='d3data'
-									[fields]='fields' value='Right' (change)="changeAlignment($event)">
-								</ejs-dropdownlist>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td style="width: 50%">
-							<label for="exampleColorInput" class="form-label">
-								Column Background Color
-							</label>
-						</td>
-						<td style="width: 50%;padding: 10px 10px 10px 0px">
-							<div>
-								<input type="color" [(ngModel)]="treeGridobject.columnColor"
-									class="form-control form-control-color" id="exampleColorInput" value="#563d7c"
-									title="Choose your color">
-							</div>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width: 50%">
-							<label for="ColorInputText" class="form-label">
-								Column Text Color
-							</label>
-						</td>
-						<td style="width: 50%;padding: 10px 10px 10px 0px">
-							<div>
-								<input type="color" [(ngModel)]="treeGridobject.columnColorText"
-									class="form-control form-control-color" id="ColorInputText" value="#563d7c"
-									title="Choose your color">
-							</div>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width: 50%">
-							<label for="ColorInputText" class="form-label">
-								Font-size
-							</label>
-						</td>
-						<td style="width: 50%;padding: 10px 10px 10px 0px">
-							<div class="input-group mb-3">
-								<span class="input-group-text" id="basic-addon1">Px</span>
-								<input type="number" class="form-control"
-									[(ngModel)]="treeGridobject.columnColorFontSize" placeholder="Font-size in px"
-									aria-label="Username" aria-describedby="basic-addon1">
-							</div>
-						</td>
-
-					</tr>
-				</table>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-					Close
-				</button>
-				<button type="submit" class="btn btn-primary" (click)="click()">
-					Save changes
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Add New column Modal-->
-<div class="modal fade" id="exampleModalAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Add New Column</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="mb-3">
-					<label for="exampleFormControlInput1" class="form-label">Column Name</label>
-					<input type="text" class="form-control" id="exampleFormControlInput1" [(ngModel)]="columnName"
-						name="columnName">
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button type="submit" class="btn btn-primary" (click)="AddColumn()">Save</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Delete Column Modal -->
-<div class="modal fade" id="exampleModalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">
-					Delete!
-				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-				</button>
-			</div>
-			<div class="modal-body">
-				<div class="mb-3">
-					<label for="exampleFormControlInput1" class="form-label">
-						Are you sure you want to delete this column
-						<strong>
-							{{treeGridobject.deleteHeaderName}}
-						</strong>
-					</label>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-					Close
-				</button>
-				<button type="submit" class="btn btn-primary" (click)="deleteColumn()">
-					Delete
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-
-<!-- Filter Column -->
-<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">
-					Filter
-				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-				</button>
-			</div>
-			<div class="modal-body">
-				<div class="mb-3">
-					<div class="property-panel-section">
-						<table id="property" class="property-panel-table" title="Properties" style="width: 100%">
-							<tr style="height: 50px">
-								<td>
-									<div>
-										Hierarchy Mode
-									</div>
-								</td>
-								<td>
-									<div>
-										<ejs-dropdownlist #dropdown1 id='mode' width='100px' [dataSource]='d1data'
-											[fields]='fields1' value='Parent' (change)="change($event)">
-										</ejs-dropdownlist>
-									</div>
-								</td>
-							</tr>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-
-<!-- Multi speaker -->
-
-<div class="modal fade" id="multisorting" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">
-					Multi Sorting
-				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-				</button>
-			</div>
-			<div class="modal-body">
-				<div class="mb-3">
-					<div class="property-panel-section">
-						<table id="property" class="property-panel-table" title="Properties" style="width: 100%">
-							<tr>
-								<td style="width: 70%">
-									<div>
-										Task Id
-									</div>
-								</td>
-								<td style="width: 30%;padding:10px 10px 10px 0px">
-									<div class="col-md-6">
-										<ejs-checkbox #taskID (change)="onClick1($event)">
-										</ejs-checkbox>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td style="width: 70%">
-									<div>
-										Task Name
-									</div>
-								</td>
-								<td style="width: 30%;padding:10px 10px 10px 0px">
-									<div class="col-md-6">
-										<ejs-checkbox #taskName (change)="onClick2($event)">
-										</ejs-checkbox>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td style="width: 70%">
-									<div>
-										Start Date
-									</div>
-								</td>
-								<td style="width: 30%; padding:10px 10px 10px 0px">
-									<div class="col-md-6">
-										<ejs-checkbox #startDate (change)="onClick3($event)"></ejs-checkbox>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td style="width: 70%">
-									<div>
-										Duration
-									</div>
-								</td>
-								<td style="width: 30%; padding:10px 10px 10px 0px">
-									<div class="col-md-6">
-										<ejs-checkbox #duration (change)="onClick4($event)"></ejs-checkbox>
-									</div>
-								</td>
-							</tr>
-						</table>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -412,6 +115,7 @@
 	</ng-template>
 </ejs-dialog>
 
+<!-- Custom Delete Dialog -->
 
 <ejs-dialog #deletetemplate [height]='height' width='350px' [visible]='false'>
 	<ng-template #footerTemplate>
@@ -426,5 +130,237 @@
 		<div class="dialogContent">
 			Are you sure you want to Delete Record?
 		</div>
+	</ng-template>
+</ejs-dialog>
+
+
+<!-- Add New Column -->
+
+<ejs-dialog #addTemplate showCloseIcon='true' [animationSettings]='animationSettings' [height]='height' width='450px'
+	[visible]='false'>
+	<ng-template #footerTemplate>
+		<button type="submit" class="e-flat e-btn e-primary" (click)="AddColumn()">
+			Save
+		</button>
+		<button type="submit" class="e-flat e-btn" (click)="addDialgHide()">
+			Cancle
+		</button>
+	</ng-template>
+	<ng-template #content>
+		<div class="dialogContent">
+			<div class="mb-1">
+				<label class="e-label">Column Name</label>
+				<input type="text" class="e-input" [(ngModel)]="columnName" name="columnName">
+			</div>
+		</div>
+	</ng-template>
+	<ng-template #header>
+		Add New Column
+	</ng-template>
+</ejs-dialog>
+
+
+
+<!-- Delete Column Modal -->
+
+<ejs-dialog #deleteColumntemplate showCloseIcon='true' [animationSettings]='animationSettings' [height]='height'
+	width='450px' [visible]='false'>
+	<ng-template #footerTemplate>
+		<button type="submit" class="e-flat e-btn e-primary" (click)="deleteColumn()">
+			Delete
+		</button>
+		<button type="submit" class="e-flat e-btn" (click)="addDialgHide('deleteColumn')">
+			Cancle
+		</button>
+	</ng-template>
+	<ng-template #content>
+		<div class="dialogContent">
+			<div class="mb-1">
+				<label for="exampleFormControlInput1" class="form-label">
+					Are you sure you want to delete this column
+					<strong>
+						{{treeGridobject.deleteHeaderName}}
+					</strong>
+				</label>
+			</div>
+		</div>
+	</ng-template>
+	<ng-template #header>
+		Delete Column
+	</ng-template>
+</ejs-dialog>
+
+
+<!-- Filter Column -->
+
+<ejs-dialog #filterColumntemplate showCloseIcon='true' [animationSettings]='animationSettings' [height]='height'
+	width='450px' [visible]='false'>
+	<ng-template #content>
+		<div class="dialogContent">
+			<div class="mb-1 text-center">
+				<h6>
+					Hierarchy Mode
+				</h6>
+				<ejs-dropdownlist #dropdown1 id='mode' width='100px' [dataSource]='d1data' [fields]='fields1'
+					value='Parent' (change)="change($event)">
+				</ejs-dropdownlist>
+			</div>
+		</div>
+	</ng-template>
+	<ng-template #header>
+		Filter Columns
+	</ng-template>
+</ejs-dialog>
+
+
+
+<!-- Multi sorting -->
+
+<ejs-dialog #multisortingtemplate showCloseIcon='true' [animationSettings]='animationSettings' [height]='height'
+	width='450px' [visible]='false'>
+	<ng-template #content>
+		<div class="dialogContent">
+			<div class="property-panel-section">
+				<table id="property" class="property-panel-table" title="Properties" style="width: 100%">
+					<tr>
+						<td style="width: 70%">
+							<div>
+								Task Id
+							</div>
+						</td>
+						<td style="width: 30%;padding:10px 10px 10px 0px">
+							<div class="col-md-6">
+								<ejs-checkbox #taskID (change)="onClick1($event)">
+								</ejs-checkbox>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 70%">
+							<div>
+								Task Name
+							</div>
+						</td>
+						<td style="width: 30%;padding:10px 10px 10px 0px">
+							<div class="col-md-6">
+								<ejs-checkbox #taskName (change)="onClick2($event)">
+								</ejs-checkbox>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 70%">
+							<div>
+								Start Date
+							</div>
+						</td>
+						<td style="width: 30%; padding:10px 10px 10px 0px">
+							<div class="col-md-6">
+								<ejs-checkbox #startDate (change)="onClick3($event)"></ejs-checkbox>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 70%">
+							<div>
+								Duration
+							</div>
+						</td>
+						<td style="width: 30%; padding:10px 10px 10px 0px">
+							<div class="col-md-6">
+								<ejs-checkbox #duration (change)="onClick4($event)"></ejs-checkbox>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</ng-template>
+	<ng-template #header>
+		Multi Sorting
+	</ng-template>
+</ejs-dialog>
+
+
+<!-- Edit Columns -->
+
+<ejs-dialog #editcolumntemplate showCloseIcon='true' [animationSettings]='animationSettings' [height]='height'
+	width='450px' [visible]='false'>
+	<ng-template #footerTemplate>
+		<button type="submit" class="e-flat e-btn e-primary" (click)="click()">
+			Save
+		</button>
+		<button type="submit" class="e-flat e-btn" (click)="addDialgHide('editColumn')">
+			Cancle
+		</button>
+	</ng-template>
+	<ng-template #content>
+		<div class="dialogContent">
+			<div class="mb-1">
+				<div class="mb-3">
+					<label>
+						Header Text
+					</label>
+					<input type="text" class="e-input" [(ngModel)]="changeHeader" name="changeHeader">
+				</div>
+				<table id="property" class="property-panel-table" title="Properties" style="width: 100%">
+					<tr>
+						<td style="width: 50%">
+							<div>
+								Column Alignment
+							</div>
+						</td>
+						<td style="width: 50%;padding: 10px 10px 10px 0px">
+							<div>
+								<ejs-dropdownlist #dropdown3 id='element' width='120px' [dataSource]='d3data'
+									[fields]='fields' value='Right' (change)="changeAlignment($event)">
+								</ejs-dropdownlist>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 50%">
+							<label for="exampleColorInput" class="form-label">
+								Column Background Color
+							</label>
+						</td>
+						<td style="width: 50%;padding: 10px 10px 10px 0px">
+							<div>
+								<input type="color" [(ngModel)]="treeGridobject.columnColor"
+									class="form-control form-control-color" value="#563d7c">
+							</div>
+						</td>
+
+					</tr>
+					<tr>
+						<td style="width: 50%">
+							<label for="ColorInputText" class="form-label">
+								Column Text Color
+							</label>
+						</td>
+						<td style="width: 50%;padding: 10px 10px 10px 0px">
+							<div>
+								<input type="color" [(ngModel)]="treeGridobject.columnColorText" value="#563d7c"
+									class="form-control form-control-color">
+							</div>
+						</td>
+
+					</tr>
+					<tr>
+						<td style="width: 50%">
+							<label for="ColorInputText" class="form-label">
+								Font-size in px
+							</label>
+						</td>
+						<td style="width: 50%;padding: 10px 10px 10px 0px">
+							<input type="number" [(ngModel)]="treeGridobject.columnColorFontSize" class="e-input">
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</ng-template>
+	<ng-template #header>
+		Edit Column
 	</ng-template>
 </ejs-dialog>

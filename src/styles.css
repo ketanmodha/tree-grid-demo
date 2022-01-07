@@ -20,10 +20,37 @@
 }
 #copyRowBackGround {
   background-color: #e3165ab9 !important;
+  border-style: dotted !important;
 }
+
+#copyRowBackGroundCut {
+  background: linear-gradient(90deg, #e3165ab9 50%, transparent 50%),
+    linear-gradient(90deg, #e3165ab9 50%, transparent 50%),
+    linear-gradient(90deg, #e3165ab9 50%, transparent 50%),
+    linear-gradient(0deg, #e3165ab9 50%, transparent 50%);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 9px 2px, 9px 2px, 1px 15px, 0px 15px;
+  animation: border-dance 5s infinite linear;
+  /* height: 118px;  */
+}
+
+@keyframes border-dance {
+  0% {
+    background-position: 0px 3px, 300px 32px, 0px 150px, 216px 0px;
+  }
+  100% {
+    background-position: 300px 3px, 0px 32px, 0px 0px, 216px 150px;
+  }
+}
+
+/* tr[aria-selected="true"] {
+  background-color: #e3165ab9 !important;
+} */
+
 #cutRowBorder {
   border-style: dashed !important;
 }
 .e-treegrid td.e-active {
   background-color: #e3165a1a !important;
+  border-style: dotted !important;
 }
