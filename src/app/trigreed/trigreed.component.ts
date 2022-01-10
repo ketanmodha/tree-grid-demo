@@ -788,11 +788,6 @@ export class TrigreedComponent implements OnInit {
 
   //! custmize cell
   customizeCell(args: QueryCellInfoEventArgs) {
-    if (!(args.data as ITreeData).hasChildRecords) {
-      if ((args.cell as HTMLElement).classList.contains("e-unboundcell")) {
-        ((args.cell as HTMLElement).querySelector('.e-unboundcelldiv') as HTMLElement).style.display = "none";
-      }
-    }
     if (args.column.field === "taskID" && this.treeGridobject.taskIdStyle == true) {
       console.log("aRGS>>>>>>>>>>>>>", args);
       // args.cell.setAttribute(
