@@ -3,7 +3,7 @@
 		<div class="col-md-12">
 			<h5 class="mt-5 text-center">TreeGrid Demo</h5>
 
-			<div class="e-resizable mt-5">
+			<div class="mt-5">
 				<!-- <div style="text-align: end;">
 					<button id='add' class="btn btn mb-2 flot-right" style="background: #80808087;"
 						(click)='onClick()'>Add New Column</button>
@@ -12,27 +12,24 @@
                     <ejs-dropdownlist id='direction' #directiondropdown index='0' [dataSource]='directionData'
                         (change)='directionChange($event)' [fields]='fields'></ejs-dropdownlist>
                 </div> -->
+				<!-- (rowDataBound)='rowDataBound($event)' -->
 				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (toolbarClick)='toolbarClick($event)'
-					[toolbar]='toolbarOption' [treeColumnIndex]="1" [allowFiltering]="true" [allowSorting]="true"
-					childMapping="subtasks" [pageSettings]="pageSettings" [filterSettings]="filterSettings"
-					[allowResizing]='true' [allowReordering]='true' [allowRowDragAndDrop]='true'
-					[showColumnChooser]='true' [allowSelection]='true' [selectionSettings]='selectionOptions'
-					[contextMenuItems]='contextMenuItems' [editSettings]='editSettings' height='400' width='100%'
-					[frozenColumns]='0' (contextMenuClick)='contextMenuClick($event)'
-					(contextMenuOpen)='contextMenuOpen($event)' (queryCellInfo)='customizeCell($event)'
-					(rowSelected)='rowSelected($event)' (rowDeselected)='rowDeselected($event)'
-					(actionComplete)="sort($event)">
+					[toolbar]='toolbarOption' [allowSelection]='true' [treeColumnIndex]="1" [allowFiltering]="true"
+					[allowSorting]="true" [enableHover]='true' childMapping="subtasks" [pageSettings]="pageSettings"
+					[filterSettings]="filterSettings" [showColumnChooser]='true' [allowReordering]='true'
+					[selectionSettings]='selectionOptions' [allowRowDragAndDrop]='true' [allowResizing]='true'
+					[contextMenuItems]='contextMenuItems' [editSettings]='editSettings' height='400'
+					(contextMenuClick)='contextMenuClick($event)' (contextMenuOpen)='contextMenuOpen($event)'
+					(queryCellInfo)='customizeCell($event)' (rowSelected)='rowSelected($event)'
+					(rowDeselected)='rowDeselected($event)' (actionComplete)="sort($event)">
 					<e-columns>
-						<!-- <e-column type="checkbox" width='40' textAlign='center'>
-						</e-column> -->
-						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='80' textAlign='Right'>
+						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='90' textAlign='Right'>
 						</e-column>
-						<e-column field='taskName' headerText='Task Name' width='200'
-							[customAttributes]='customAttributes'>
+						<e-column field='taskName' headerText='Task Name' width=220>
 						</e-column>
-						<e-column field='startDate' headerText='Start Date' width='100' format="yMd" textAlign='Right'>
+						<e-column field='startDate' headerText='Start Date' width='140' format="yMd" textAlign='Right'>
 						</e-column>
-						<e-column field='duration' headerText='Duration' width='90' textAlign='Right'>
+						<e-column field='duration' headerText='Duration' width='100' textAlign='Right'>
 						</e-column>
 						<!-- [filterBarTemplate]="templateOptions" -->
 					</e-columns>
@@ -304,6 +301,20 @@
 					<input type="text" class="e-input" [(ngModel)]="changeHeader" name="changeHeader">
 				</div>
 				<table id="property" class="property-panel-table" title="Properties" style="width: 100%">
+					<tr>
+						<td style="width: 50%">
+							<div>
+								Data-Type
+							</div>
+						</td>
+						<td style="width: 50%;padding: 10px 10px 10px 0px">
+							<div>
+								<ejs-dropdownlist #dropdown4 id='element' width='120px' [dataSource]='d4data'
+									[fields]='fields' value='Right' (change)="changeDatatype($event)">
+								</ejs-dropdownlist>
+							</div>
+						</td>
+					</tr>
 					<tr>
 						<td style="width: 50%">
 							<div>

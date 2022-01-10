@@ -43,10 +43,6 @@
   }
 }
 
-/* tr[aria-selected="true"] {
-  background-color: #e3165ab9 !important;
-} */
-
 #cutRowBorder {
   border-style: dashed !important;
 }
@@ -54,3 +50,17 @@
   background-color: #e3165a1a !important;
   border-style: dotted !important;
 }
+
+/* .e-treegrid .e-rowcell.customcss {
+  background-color: #ecedee;
+  font-family: "Bell MT";
+  color: "red";
+  font-size: "20px";
+}
+
+.e-treegrid .e-headercell.customcss {
+  background-color: #2382c3;
+  color: white;
+  font-family: "Bell MT";
+  font-size: "20px";
+} */

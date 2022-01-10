@@ -25,6 +25,7 @@ import {
   VirtualScrollService,
   ColumnMenuService,
   RowPosition,
+  ITreeData,
 } from "@syncfusion/ej2-angular-treegrid";
 import { sampleData } from "../data";
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
@@ -33,6 +34,7 @@ import { BeforeOpenCloseEventArgs } from "@syncfusion/ej2-inputs";
 import {
   GridComponent,
   QueryCellInfoEventArgs,
+  RowDataBoundEventArgs,
   RowDeselectEventArgs,
   RowSelectEventArgs,
   SortEventArgs,
@@ -136,12 +138,15 @@ export class TrigreedComponent implements OnInit {
   // ! Cell Alignment and other
   public d2data: Object;
   public d3data: Object;
+  public d4data: Object;
   public ddlfields: Object;
   public fields: Object;
   @ViewChild("dropdown2", { static: false })
   public dropdown2: DropDownListComponent;
   @ViewChild("dropdown3", { static: false })
   public dropdown3: DropDownListComponent;
+  @ViewChild("dropdown4", { static: false })
+  public dropdown4: DropDownListComponent;
   public customAttributes: Object;
   treeGridobject: any = {};
   public copiedRecord: boolean = false;
@@ -173,6 +178,9 @@ export class TrigreedComponent implements OnInit {
   @ViewChild("container", { read: ElementRef, static: false })
   container: ElementRef;
 
+
+  public columnStyle: any = [];
+
   ngOnInit(): void {
     this.treeGridobject.singleRowSelection = [];
     this.data = sampleData;
@@ -187,8 +195,10 @@ export class TrigreedComponent implements OnInit {
         headerText: "Task Id",
         type: "number",
         visble: true,
+        width: 300,
+        minWidth: 100,
+        maxWidth: 300,
         isFrozen: true,
-        validationRules: { required: true, number: true },
       },
       {
         field: "taskName",
@@ -213,8 +223,9 @@ export class TrigreedComponent implements OnInit {
       },
     ];
 
+
     // toolbar option like column chooser
-    // this.toolbarOption = ["ColumnChooser"];
+    // this.toolbarOption = ["ColumnChooser",];
 
     // selection option like single or multiple
     this.selectionOptions = {
@@ -233,6 +244,7 @@ export class TrigreedComponent implements OnInit {
       { text: "Del Col", target: ".e-headercell", id: "deletecolumn" },
       { text: "Choose Col", target: ".e-headercell", id: "selectcolumn" },
       { text: "Freeze Col", target: ".e-headercell", id: "freezecolumn" },
+      // { text: "Freeze Col Off", target: ".e-headercell", id: "freezecolumnOff" },
       { text: "Filter Col", target: ".e-headercell", id: "filtercolumn" },
       { text: "Multi Sort", target: ".e-headercell", id: "multisort" },
 
@@ -343,15 +355,26 @@ export class TrigreedComponent implements OnInit {
     ]),
 
       (this.d3data = [
-        { id: "right", name: "right" },
-        { id: "left", name: "left" },
-        { id: "center", name: "center" },
-        { id: "justify", name: "justify" },
+        { id: "right", name: "Right" },
+        { id: "left", name: "Left" },
+        { id: "center", name: "Center" },
+        { id: "justify", name: "Justify" },
       ]),
-      setTimeout(() => {
-        // this.disable();
-        document.getElementById("multiselectSingle").style.display = "none";
-      }, 200);
+
+      // Data type
+
+      this.d4data = [
+        { id: "text", name: "Text" },
+        { id: "num", name: "Number" },
+        { id: "date", name: "date" },
+        { id: "boolean", name: "Boolean" },
+      ]
+    setTimeout(() => {
+      // this.disable();
+      document.getElementById("multiselectSingle").style.display = "none";
+    }, 200);
+
+
   }
 
   // filter modal change filter type
@@ -582,7 +605,7 @@ export class TrigreedComponent implements OnInit {
       this.changeHeader = args["column"].headerText;
 
       // For stying css add to class
-      args["rowInfo"].target.setAttribute("class", "headerColumnStyle");
+      // args["rowInfo"].target.setAttribute("class", "headerColumnStyle");
 
       //  Rename column text and styling property modal
       // $("#exampleModal").modal("show");
@@ -629,6 +652,27 @@ export class TrigreedComponent implements OnInit {
       // open column chooser on click event
       this.treeGridObj.columnChooserModule.openColumnChooser();
 
+      // ***** column freez ****** //
+    } else if (args.item["properties"].id == "freezecolumn") {
+      if (this.treeGridObj.getColumns().length - 1 > this.treeGridObj.getFrozenColumns()) {
+        for (let i = 0; i < this.treeGridObj.getVisibleColumns().length; i++) {
+          if (args['column'].field == this.treeGridObj.getVisibleColumns()[i].field) {
+            this.treeGridObj.getVisibleColumns()[i].isFrozen = true;
+          }
+        }
+        this.treeGridObj.refreshColumns();
+      }
+
+      // ******* column freez Off **** //
+    } else if (args.item["properties"].id == "freezecolumnOff") {
+      if (this.treeGridObj.getColumns().length - 1 > this.treeGridObj.getFrozenColumns()) {
+        for (let i = 0; i < this.treeGridObj.getVisibleColumns().length; i++) {
+          if (args['column'].field == this.treeGridObj.getVisibleColumns()[i].field) {
+            this.treeGridObj.getVisibleColumns()[i].isFrozen = false;
+          }
+        }
+        this.treeGridObj.refreshColumns();
+      }
     }
   }
 
@@ -649,6 +693,14 @@ export class TrigreedComponent implements OnInit {
     document.querySelectorAll("li#pastechild")[0].setAttribute("style", style);
   }
 
+  // change Data type 
+  changeDatatype(e: ChangeEventArgs): void {
+    console.log("e", e)
+    this.treeGridobject.dataType = e.itemData;
+    console.log("this.treeGridobject.dataType", this.treeGridobject.dataType)
+  }
+
+
   //! Edit column Save
   click() {
     if (
@@ -660,11 +712,58 @@ export class TrigreedComponent implements OnInit {
       return;
     }
     const column = this.treeGridObj.getColumnByField(this.headerText);
+    console.log(column);
     column.headerText = this.changeHeader;
+    column.type = 'number';
+    if (column.field == "taskID") {
+      this.treeGridobject.taskIdStyle = true;
+      this.treeGridobject.taskIdStyleCss =
+      {
+        'taskID': `background-color: ${this.treeGridobject.columnColor};
+          color:${this.treeGridobject.columnColorText};
+          font-size:${this.treeGridobject.columnColorFontSize + 'px'};
+          text-align:${this.treeGridobject.columnAlign}`
+      }
+
+    } else if (column.field == "taskName") {
+      this.treeGridobject.taskNameStyle = true;
+      this.treeGridobject.taskNameStyleCss =
+      {
+        'taskName': `background-color: ${this.treeGridobject.columnColor};
+          color:${this.treeGridobject.columnColorText};
+          font-size:${this.treeGridobject.columnColorFontSize + 'px'};
+          text-align:${this.treeGridobject.columnAlign}`
+      }
+
+    } else if (column.field == "startDate") {
+      this.treeGridobject.startDateStyle = true;
+
+      this.treeGridobject.startDateStyleCss =
+      {
+        'startDate': `background-color: ${this.treeGridobject.columnColor};
+          color:${this.treeGridobject.columnColorText};
+          font-size:${this.treeGridobject.columnColorFontSize + 'px'};
+          text-align:${this.treeGridobject.columnAlign}`
+      }
+    } else if (column.field == "duration") {
+      this.treeGridobject.durationStyle = true;
+
+      this.treeGridobject.durationStyleCss =
+      {
+        'duration': `background-color: ${this.treeGridobject.columnColor};
+          color:${this.treeGridobject.columnColorText};
+          font-size:${this.treeGridobject.columnColorFontSize + 'px'};
+          text-align:${this.treeGridobject.columnAlign}`
+      }
+    }
+
+
+
+    console.log("column", column.type = 'number')
     this.treeGridObj.refreshColumns();
-    setTimeout(() => {
-      this.stylingCell();
-    }, 500);
+
+    console.log("this.data>>>>>>.", this.data)
+
 
     // this.treeGridObj.getColumnByField(this.headerText)s = alignment;
     // console.log(this.treeGridObj.getColumnByField(columnName))
@@ -675,30 +774,49 @@ export class TrigreedComponent implements OnInit {
     // $("#exampleModal").modal("hide");
   }
 
-  // ! Set Style
-  stylingCell() {
-    $(".customcss").css({
-      "background-color": this.treeGridobject.columnColor,
-      color: this.treeGridobject.columnColorText,
-      "font-size": this.treeGridobject.columnColorFontSize,
-      "text-align": this.treeGridobject.columnAlign,
-    });
-  }
+
+  // rowDataBound(args: RowDataBoundEventArgs) {
+  //   console.log("args", args)
+  //   if (!(args.data as ITreeData).hasChildRecords) {
+  //     (args.row as HTMLElement).style.backgroundColor = 'green';
+  //     args.data['taskID'] = this.getRandomID();
+  //     args.data['taskData']['taskID'] = args.data['taskID']
+  //     console.log("args.data['taskID']??>>", args.data['taskID'])
+  //     console.log("args.data['taskData']['taskID']>>>", args.data['taskData']['taskID'])
+  //   }
+  // }
 
   //! custmize cell
   customizeCell(args: QueryCellInfoEventArgs) {
-    for (let data in this.newColourColumn) {
-      if (this.newColourColumn[data].fieldName == args.column.field) {
-        if (this.newColourColumn[data].textAlign == "left") {
-          args.cell.setAttribute("style", "text-align:left;");
-        } else if (this.newColourColumn[data].textAlign == "right") {
-          args.cell.setAttribute("style", "text-align:right;");
-        } else if (this.newColourColumn[data].colurs == "red") {
-          args.cell.setAttribute("style", "color:red;text-align:center;");
-        } else {
-          args.cell.setAttribute("style", "color:#336c12");
-        }
+    if (!(args.data as ITreeData).hasChildRecords) {
+      if ((args.cell as HTMLElement).classList.contains("e-unboundcell")) {
+        ((args.cell as HTMLElement).querySelector('.e-unboundcelldiv') as HTMLElement).style.display = "none";
       }
+    }
+    if (args.column.field === "taskID" && this.treeGridobject.taskIdStyle == true) {
+      console.log("aRGS>>>>>>>>>>>>>", args);
+      // args.cell.setAttribute(
+      //   'style',
+      //   `background-color: ${this.treeGridobject.columnColor};
+      //   color:${this.treeGridobject.columnColorText};
+      //   font-size:${this.treeGridobject.columnColorFontSize + 'px'};
+      //   text-align:${this.treeGridobject.columnAlign}`);
+
+      args.cell.setAttribute('style', this.treeGridobject.taskIdStyleCss.taskID);
+
+      // taskName css
+    } else if (args.column.field === "taskName" && this.treeGridobject.taskNameStyle == true) {
+      args.cell.setAttribute('style', this.treeGridobject.taskNameStyleCss.taskName);
+
+      // startDate Css
+    } else if (args.column.field === "startDate" && this.treeGridobject.startDateStyle == true) {
+      args.cell.setAttribute('style', this.treeGridobject.startDateStyleCss.startDate);
+
+      // duresion Css
+    } else if (args.column.field === "duration" && this.treeGridobject.durationStyle == true) {
+      args.cell.setAttribute('style', this.treeGridobject.durationStyleCss.duration);
+      console.log("aRGS>>>>>>>>>>>>>", args);
+
     }
   }
 
@@ -917,5 +1035,19 @@ export class TrigreedComponent implements OnInit {
   // deletepopupHide
   cancleDeletePopup() {
     this.deletetemplate.hide();
+  }
+
+  selectfreez(args: any): void {
+    console.log("select", args)
+    if (this.treeGridObj.getColumns().length - 1 > this.treeGridObj.getFrozenColumns()) {
+      for (let i = 0; i < this.treeGridObj.getVisibleColumns().length; i++) {
+        if (args['itemData'].id == this.treeGridObj.getVisibleColumns()[i].field) {
+          this.treeGridObj.getVisibleColumns()[i].isFrozen = true;
+        }
+      }
+      this.treeGridObj.refreshColumns();
+    } else {
+      args.cancel = true;
+    }
   }
 }

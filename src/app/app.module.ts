@@ -34,7 +34,8 @@ import { DialogModule } from '@syncfusion/ej2-angular-popups';
     ReactiveFormsModule,
     DropDownListAllModule,
     CheckBoxModule,
-    DialogModule
+    DialogModule,
+
   ],
   providers: [PageService,
     SortService,
