@@ -14,16 +14,17 @@
                 </div> -->
 				<!-- (rowDataBound)='rowDataBound($event)' -->
 				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (toolbarClick)='toolbarClick($event)'
-					[toolbar]='toolbarOption' [allowSelection]='true' [treeColumnIndex]="1" [allowFiltering]="true"
-					[allowSorting]="true" [enableHover]='true' childMapping="subtasks" [pageSettings]="pageSettings"
-					[filterSettings]="filterSettings" [showColumnChooser]='true' [allowReordering]='true'
-					[selectionSettings]='selectionOptions' [allowRowDragAndDrop]='true' [allowResizing]='true'
-					[contextMenuItems]='contextMenuItems' [editSettings]='editSettings' height='350'
-					(contextMenuClick)='contextMenuClick($event)' (contextMenuOpen)='contextMenuOpen($event)'
-					(queryCellInfo)='customizeCell($event)' (rowSelected)='rowSelected($event)'
-					(rowDeselected)='rowDeselected($event)' (actionComplete)="sort($event)">
+					[toolbar]='toolbarOption' [frozenColumns]="true" [allowSelection]='true' [treeColumnIndex]="1"
+					[allowFiltering]="true" [allowSorting]="true" [enableHover]='true' childMapping="subtasks"
+					[pageSettings]="pageSettings" [filterSettings]="filterSettings" [showColumnChooser]='true'
+					[allowReordering]='true' [selectionSettings]='selectionOptions' [allowRowDragAndDrop]='true'
+					[allowResizing]='true' [contextMenuItems]='contextMenuItems' [editSettings]='editSettings'
+					height='400' (contextMenuClick)='contextMenuClick($event)'
+					(contextMenuOpen)='contextMenuOpen($event)' (queryCellInfo)='customizeCell($event)'
+					(rowSelected)='rowSelected($event)' (rowDeselected)='rowDeselected($event)'
+					(actionComplete)="sort($event)">
 					<e-columns>
-						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='90' textAlign='Right'>
+						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='120' textAlign='Right'>
 						</e-column>
 						<e-column field='taskName' headerText='Task Name' width=350>
 						</e-column>

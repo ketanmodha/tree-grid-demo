@@ -244,7 +244,7 @@ export class TrigreedComponent implements OnInit {
       { text: "Del Col", target: ".e-headercell", id: "deletecolumn" },
       { text: "Choose Col", target: ".e-headercell", id: "selectcolumn" },
       { text: "Freeze Col", target: ".e-headercell", id: "freezecolumn" },
-      // { text: "Freeze Col Off", target: ".e-headercell", id: "freezecolumnOff" },
+      { text: "Freeze Col", target: ".e-headercell", id: "freezecolumnOff", iconCss: "e-icons e-right", },
       { text: "Filter Col", target: ".e-headercell", id: "filtercolumn" },
       { text: "Multi Sort", target: ".e-headercell", id: "multisort" },
 
@@ -614,9 +614,7 @@ export class TrigreedComponent implements OnInit {
 
       // ****** Delete Column ****** //
     } else if (args.item["properties"].id == "deletecolumn") {
-      // Delete Column Modal Open Function
 
-      this.deleteColumntemplate.show();
 
       // Delete column Field
       this.treeGridobject.deleteField = args["column"].field;
@@ -624,9 +622,13 @@ export class TrigreedComponent implements OnInit {
       // Delete column headerText
       this.treeGridobject.deleteHeaderName = args["column"].headerText;
 
-      // Treegrid Refresh
-      this.treeGridObj.refresh();
-      this.gridObj.refreshColumns();
+      // Delete Column Modal Open Function
+      this.deleteColumntemplate.show();
+
+
+      // // Treegrid Refresh
+      // this.treeGridObj.refresh();
+      // this.gridObj.refreshColumns();
 
       // ****** Add Column  ****** //
     } else if (args.item["properties"].id == "addcolumn") {
@@ -682,6 +684,16 @@ export class TrigreedComponent implements OnInit {
 
   // context menu open 
   contextMenuOpen(arg?: BeforeOpenCloseEventArgs): void {
+    console.log("arg", arg)
+    if (arg['column'].freezeTable == 'frozen-left') {
+      document.getElementById("freezecolumn").style.display = "none";
+      document.getElementById("freezecolumnOff").style.display = "block";
+    } else if (arg['column'].freezeTable == 'movable') {
+      document.getElementById("freezecolumn").style.display = "block";
+      document.getElementById("freezecolumnOff").style.display = "none";
+      console.log("context menu open>>>>>>>", arg)
+
+    }
     /* Checked if any row/record is being cut or copied,
     / based on that, it activates / deactivates the paste next and paste child menu items.
     */
