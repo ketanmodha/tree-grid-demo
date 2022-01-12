@@ -135,6 +135,17 @@ export class TrigreedComponent implements OnInit {
   @ViewChild("price", { static: false })
   public price: CheckBoxComponent;
 
+  // ! Search Filter
+  @ViewChild("taskIDf", { static: false })
+  public taskIDf: CheckBoxComponent;
+  @ViewChild("taskNamef", { static: false })
+  public taskNamef: CheckBoxComponent;
+  @ViewChild("startDatef", { static: false })
+  public startDatef: CheckBoxComponent;
+  @ViewChild("durationf", { static: false })
+  public durationf: CheckBoxComponent;
+  @ViewChild("pricef", { static: false })
+  public pricef: CheckBoxComponent;
   // ! Cell Alignment and other
   public d2data: Object;
   public d3data: Object;
@@ -297,7 +308,7 @@ export class TrigreedComponent implements OnInit {
 
     // page size
     this.pageSettings = { pageSize: 100 };
-    // this.filterSettings = { type: 'Menu', ignoreAccent: true };
+    this.filterSettings = { type: 'FilterBar', ignoreAccent: true, mode: 'Immediate' };
 
     // formate option
     this.formatoption = { type: "dateTime", format: "dd/MM/yyyy hh:mm a" };
@@ -667,14 +678,9 @@ export class TrigreedComponent implements OnInit {
 
       // ******* column freez Off **** //
     } else if (args.item["properties"].id == "freezecolumnOff") {
-      if (this.treeGridObj.getColumns().length - 1 > this.treeGridObj.getFrozenColumns()) {
-        for (let i = 0; i < this.treeGridObj.getVisibleColumns().length; i++) {
-          if (args['column'].field == this.treeGridObj.getVisibleColumns()[i].field) {
-            this.treeGridObj.getVisibleColumns()[i].isFrozen = false;
-          }
-        }
-        this.treeGridObj.refreshColumns();
-      }
+      console.log("args>>>>>>>>", args)
+      this.treeGridObj.getColumnByField(args['column'].field).isFrozen = false;
+      this.treeGridObj.refreshColumns();
     }
   }
 
@@ -691,7 +697,6 @@ export class TrigreedComponent implements OnInit {
     } else if (arg['column'].freezeTable == 'movable') {
       document.getElementById("freezecolumn").style.display = "block";
       document.getElementById("freezecolumnOff").style.display = "none";
-      console.log("context menu open>>>>>>>", arg)
 
     }
     /* Checked if any row/record is being cut or copied,
@@ -801,7 +806,6 @@ export class TrigreedComponent implements OnInit {
   //! custmize cell
   customizeCell(args: QueryCellInfoEventArgs) {
     if (args.column.field === "taskID" && this.treeGridobject.taskIdStyle == true) {
-      console.log("aRGS>>>>>>>>>>>>>", args);
       // args.cell.setAttribute(
       //   'style',
       //   `background-color: ${this.treeGridobject.columnColor};
@@ -922,11 +926,15 @@ export class TrigreedComponent implements OnInit {
   // delete column
 
   deleteColumn() {
+
     this.treeGridObj.columns.findIndex((i, x) => {
-      if (i.field == this.treeGridobject.deleteField) {
-        this.treeGridObj.columns.splice(x, 1);
-        this.deleteColumntemplate.hide();
-        this.treeGridObj.refreshColumns();
+      if (this.treeGridobject.deleteField) {
+        if (i.field == this.treeGridobject.deleteField) {
+          this.treeGridObj.columns.splice(x, 1);
+          this.treeGridObj.refreshColumns();
+          this.deleteColumntemplate.hide();
+          this.treeGridobject.deleteField = null
+        }
       }
     });
   }
@@ -934,7 +942,6 @@ export class TrigreedComponent implements OnInit {
   // ! Multi Sorting Functions Start
 
   public onClick1(e: MouseEvent): void {
-    console.log("wwwwwwwwwwwwwwwwwwww", e)
     if (this.taskID.checked) {
       this.treeGridObj.sortByColumn("taskID", "Ascending", true);
     } else {
@@ -963,6 +970,41 @@ export class TrigreedComponent implements OnInit {
       this.treeGridObj.sortByColumn("duration", "Ascending", true);
     } else {
       this.treeGridObj.grid.removeSortColumn("duration");
+    }
+  }
+
+
+  // ! Multi Sorting Functions Start
+
+  public onClick11(e: MouseEvent): void {
+    if (this.taskIDf.checked) {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+    } else {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
+    }
+  }
+
+  public onClick22(e: MouseEvent): void {
+    if (this.taskNamef.checked) {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+    } else {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
+    }
+  }
+
+  public onClick33(e: MouseEvent): void {
+    if (this.startDatef.checked) {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+    } else {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
+    }
+  }
+
+  public onClick44(e: MouseEvent): void {
+    if (this.durationf.checked) {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+    } else {
+      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
     }
   }
 

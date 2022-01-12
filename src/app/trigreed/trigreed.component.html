@@ -14,7 +14,7 @@
                 </div> -->
 				<!-- (rowDataBound)='rowDataBound($event)' -->
 				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (toolbarClick)='toolbarClick($event)'
-					[toolbar]='toolbarOption' [frozenColumns]="true" [allowSelection]='true' [treeColumnIndex]="1"
+					[toolbar]='toolbarOption' [frozenColumns]="1" [allowSelection]='true' [treeColumnIndex]="1"
 					[allowFiltering]="true" [allowSorting]="true" [enableHover]='true' childMapping="subtasks"
 					[pageSettings]="pageSettings" [filterSettings]="filterSettings" [showColumnChooser]='true'
 					[allowReordering]='true' [selectionSettings]='selectionOptions' [allowRowDragAndDrop]='true'
@@ -203,6 +203,59 @@
 					value='Parent' (change)="change($event)">
 				</ejs-dropdownlist>
 			</div>
+
+			<table id="property" class="property-panel-table" title="Properties" style="width: 100%">
+				<tr>
+					<td style="width: 70%">
+						<div>
+							Task Id
+						</div>
+					</td>
+					<td style="width: 30%;padding:10px 10px 10px 0px">
+						<div class="col-md-6">
+							<ejs-checkbox #taskIDf (change)="onClick11($event)">
+							</ejs-checkbox>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="width: 70%">
+						<div>
+							Task Name
+						</div>
+					</td>
+					<td style="width: 30%;padding:10px 10px 10px 0px">
+						<div class="col-md-6">
+							<ejs-checkbox #taskNamef (change)="onClick22($event)">
+							</ejs-checkbox>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="width: 70%">
+						<div>
+							Start Date
+						</div>
+					</td>
+					<td style="width: 30%; padding:10px 10px 10px 0px">
+						<div class="col-md-6">
+							<ejs-checkbox #startDatef (change)="onClick33($event)"></ejs-checkbox>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="width: 70%">
+						<div>
+							Duration
+						</div>
+					</td>
+					<td style="width: 30%; padding:10px 10px 10px 0px">
+						<div class="col-md-6">
+							<ejs-checkbox #durationf (change)="onClick44($event)"></ejs-checkbox>
+						</div>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</ng-template>
 	<ng-template #header>
