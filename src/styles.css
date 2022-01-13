@@ -76,3 +76,11 @@
 ::-webkit-scrollbar-thumb {
   background: #e3165ab9;
 } */
+th.e-filterbarcell.e-fltrtemp {
+  padding: 10px !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+.e-gridheader.e-lib.e-draggable.e-droppable {
+  padding-right: 0 !important ;
+}

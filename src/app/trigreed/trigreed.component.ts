@@ -30,9 +30,10 @@ import {
 import { sampleData } from "../data";
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { getValue, isNullOrUndefined } from "@syncfusion/ej2-base";
-import { BeforeOpenCloseEventArgs } from "@syncfusion/ej2-inputs";
+import { BeforeOpenCloseEventArgs, NumericTextBox, TextBox } from "@syncfusion/ej2-inputs";
 import {
   GridComponent,
+  IFilterUI,
   QueryCellInfoEventArgs,
   RowDataBoundEventArgs,
   RowDeselectEventArgs,
@@ -46,6 +47,7 @@ import {
 } from "@syncfusion/ej2-angular-dropdowns";
 import { CheckBoxComponent } from "@syncfusion/ej2-angular-buttons";
 import { DialogComponent } from "@syncfusion/ej2-angular-popups";
+import { Calendar } from "@syncfusion/ej2-calendars";
 
 declare var $: any;
 
@@ -118,8 +120,6 @@ export class TrigreedComponent implements OnInit {
 
   @ViewChild("dropdown1", { static: false })
   public dropdown1: DropDownListComponent;
-  public templateOptions: object;
-  public dropDownFilter: DropDownList;
   public d1data: Object;
   public fields1: Object;
 
@@ -138,12 +138,20 @@ export class TrigreedComponent implements OnInit {
   // ! Search Filter
   @ViewChild("taskIDf", { static: false })
   public taskIDf: CheckBoxComponent;
+  public tasktemplateOptionsNumeric: IFilterUI;
   @ViewChild("taskNamef", { static: false })
   public taskNamef: CheckBoxComponent;
+  public taskNametemplateOptions: IFilterUI;
+  public textBox: TextBox;
   @ViewChild("startDatef", { static: false })
   public startDatef: CheckBoxComponent;
+  public startDatetemplateOptions: IFilterUI;
+  public datePicker: Calendar;
   @ViewChild("durationf", { static: false })
   public durationf: CheckBoxComponent;
+  public templateOptionsNumeric: IFilterUI;
+  public elem: HTMLElement;
+  public numeriTextBox: NumericTextBox;
   @ViewChild("pricef", { static: false })
   public pricef: CheckBoxComponent;
   // ! Cell Alignment and other
@@ -210,6 +218,7 @@ export class TrigreedComponent implements OnInit {
         minWidth: 100,
         maxWidth: 300,
         isFrozen: true,
+        allowFiltering: false,
       },
       {
         field: "taskName",
@@ -230,7 +239,6 @@ export class TrigreedComponent implements OnInit {
         headerText: "Duration",
         type: "number",
         visble: true,
-        filterbars: this.templateOptions,
       },
     ];
 
@@ -308,36 +316,83 @@ export class TrigreedComponent implements OnInit {
 
     // page size
     this.pageSettings = { pageSize: 100 };
-    this.filterSettings = { type: 'FilterBar', ignoreAccent: true, mode: 'Immediate' };
+    this.filterSettings = {
+      type: 'FilterBar',
+      ignoreAccent: true,
+      mode: 'Immediate',
+    };
 
     // formate option
     this.formatoption = { type: "dateTime", format: "dd/MM/yyyy hh:mm a" };
 
-    // template options
-    this.templateOptions = {
-      create: (args: { element: Element }) => {
-        let dd: HTMLInputElement = document.createElement("input");
-        dd.id = "duration";
-        return dd;
+    // durataion filter template bar
+    this.templateOptionsNumeric = {
+      create: () => {
+        this.elem = document.createElement('input');
+        return this.elem;
       },
-      write: (args: { element: Element }) => {
-        let dataSource: string[] = ["All", "1", "3", "4", "5", "6", "8", "9"];
-        this.dropDownFilter = new DropDownList({
-          dataSource: dataSource,
-          value: "All",
-          change: (e: ChangeEventArgs) => {
-            let valuenum: any = +e.value;
-            let id: any = <string>this.dropDownFilter.element.id;
-            let value: any = <string>e.value;
-            if (value !== "All") {
-              this.treeGridObj.filterByColumn(id, "equal", valuenum);
-            } else {
-              this.treeGridObj.removeFilteredColsByField(id);
-            }
-          },
+      write: (args) => {
+        this.numeriTextBox = new NumericTextBox({
+          format: '',
+          placeholder: 'Duration',
+          cssClass: 'e-outline',
+          floatLabelType: 'Auto',
+          value: 10
         });
-        this.dropDownFilter.appendTo("#duration");
+        this.numeriTextBox.appendTo(this.elem);
+      }
+    };
+
+    // task id filter bar
+    this.tasktemplateOptionsNumeric = {
+      create: () => {
+        this.elem = document.createElement('input');
+        return this.elem;
       },
+      write: (args) => {
+        this.numeriTextBox = new NumericTextBox({
+          format: '',
+          placeholder: 'Task ID',
+          cssClass: 'e-outline',
+          floatLabelType: 'Auto',
+          value: 1
+        });
+        this.numeriTextBox.appendTo(this.elem);
+      }
+    };
+
+    // task name filter bar
+
+    this.taskNametemplateOptions = {
+      create: () => {
+        this.elem = document.createElement('input');
+        return this.elem;
+      },
+      write: (args) => {
+        this.textBox = new TextBox({
+          placeholder: 'Task Name',
+          cssClass: 'e-outline',
+          floatLabelType: 'Auto',
+        });
+        this.textBox.appendTo(this.elem);
+      }
+    };
+
+    // date filter template
+
+    this.startDatetemplateOptions = {
+      create: () => {
+        this.elem = document.createElement('input');
+        return this.elem;
+      },
+      write: (args) => {
+        this.textBox = new TextBox({
+          placeholder: 'Start Date',
+          cssClass: 'e-outline',
+          floatLabelType: 'Auto',
+        });
+        this.textBox.appendTo(this.elem);
+      }
     };
 
     // fiels like a mode
@@ -388,13 +443,7 @@ export class TrigreedComponent implements OnInit {
 
   }
 
-  // filter modal change filter type
-  change(e: ChangeEventArgs): void {
-    let mode: any = <string>e.value;
-    this.treeGridObj.filterSettings.hierarchyMode = mode;
-    this.treeGridObj.clearFiltering();
-    this.dropDownFilter.value = "All";
-  }
+
 
   // remove column
   removed(args: any) {
@@ -978,33 +1027,34 @@ export class TrigreedComponent implements OnInit {
 
   public onClick11(e: MouseEvent): void {
     if (this.taskIDf.checked) {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+      document.getElementById("taskID_filterBarcell").style.display = "none";
     } else {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
+      document.getElementById("taskID_filterBarcell").style.display = "contents";
     }
   }
 
   public onClick22(e: MouseEvent): void {
     if (this.taskNamef.checked) {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+      document.getElementById("taskName_filterBarcell").style.display = "none";
     } else {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
+      document.getElementById("taskName_filterBarcell").style.display = "contents"
     }
   }
 
   public onClick33(e: MouseEvent): void {
     if (this.startDatef.checked) {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+      document.getElementById("startDate_filterBarcell").style.display = "none";
     } else {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
+      document.getElementById("startDate_filterBarcell").style.display = "contents"
     }
   }
 
   public onClick44(e: MouseEvent): void {
+    console.log("onClick44", e)
     if (this.durationf.checked) {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'none';
+      document.getElementById("duration_filterBarcell").style.display = "none";
     } else {
-      // this.treeGridObj.getHeaderTable().querySelector('.e-filterdiv').style.display = 'contents';
+      document.getElementById("duration_filterBarcell").style.display = "contents"
     }
   }
 

@@ -3,7 +3,7 @@
 		<div class="col-md-12">
 			<h5 class="mt-5 text-center">TreeGrid Demo</h5>
 
-			<div class="mt-5">
+			<div class="mt-5 table_css">
 				<!-- <div style="text-align: end;">
 					<button id='add' class="btn btn mb-2 flot-right" style="background: #80808087;"
 						(click)='onClick()'>Add New Column</button>
@@ -14,7 +14,7 @@
                 </div> -->
 				<!-- (rowDataBound)='rowDataBound($event)' -->
 				<ejs-treegrid #treeGridObj #grid [dataSource]="data" (toolbarClick)='toolbarClick($event)'
-					[toolbar]='toolbarOption' [frozenColumns]="1" [allowSelection]='true' [treeColumnIndex]="1"
+					[toolbar]='toolbarOption' [frozenColumns]="0" [allowSelection]='true' [treeColumnIndex]="1"
 					[allowFiltering]="true" [allowSorting]="true" [enableHover]='true' childMapping="subtasks"
 					[pageSettings]="pageSettings" [filterSettings]="filterSettings" [showColumnChooser]='true'
 					[allowReordering]='true' [selectionSettings]='selectionOptions' [allowRowDragAndDrop]='true'
@@ -24,13 +24,17 @@
 					(rowSelected)='rowSelected($event)' (rowDeselected)='rowDeselected($event)'
 					(actionComplete)="sort($event)">
 					<e-columns>
-						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='120' textAlign='Right'>
+						<e-column field='taskID' isPrimaryKey=true headerText='Task ID' width='120' textAlign='Right'
+							[filterBarTemplate]='tasktemplateOptionsNumeric'>
 						</e-column>
-						<e-column field='taskName' headerText='Task Name' width=350>
+						<e-column field='taskName' [filterBarTemplate]="taskNametemplateOptions" headerText='Task Name'
+							width=350>
 						</e-column>
-						<e-column field='startDate' headerText='Start Date' width='350' format="yMd" textAlign='Right'>
+						<e-column field='startDate' [filterBarTemplate]="startDatetemplateOptions"
+							headerText='Start Date' width='350' format="yMd" textAlign='Right'>
 						</e-column>
-						<e-column field='duration' headerText='Duration' width='350' textAlign='Right'>
+						<e-column field='duration' headerText='Duration' width='350' textAlign='Right'
+							[filterBarTemplate]='templateOptionsNumeric'>
 						</e-column>
 						<!-- [filterBarTemplate]="templateOptions" -->
 					</e-columns>
