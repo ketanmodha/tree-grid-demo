@@ -1,5 +1,5 @@
 .DS_STORE
-
+api/node_modules
 /dist/
 /bazel-out
 /integration/bazel/bazel-*
