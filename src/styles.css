@@ -1,14 +1,5 @@
 @import "../node_modules/@syncfusion/ej2-material-theme/styles/material.css";
-/* You can add global styles to this file, and also import other style files */
-/* .e-headertext {
-  font-weight: bold;
-  font-size: 15px;
-  letter-spacing: 1px;
-} */
-/* .csss {
-  background-color: red !important;
-  text-align: center;
-} */
+
 .span.e-menu-icon.e-icons.e-edit {
   color: white !important;
 }
@@ -51,31 +42,7 @@
   border-style: dotted !important;
 }
 
-/* .e-treegrid .e-rowcell.customcss {
-  background-color: #ecedee;
-  font-family: "Bell MT";
-  color: "red";
-  font-size: "20px";
-}
 
-.e-treegrid .e-headercell.customcss {
-  background-color: #2382c3;
-  color: white;
-  font-family: "Bell MT";
-  font-size: "20px";
-} */
-
-/* ::-webkit-scrollbar {
-  width: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #ebebeb;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #e3165ab9;
-} */
 th.e-filterbarcell.e-fltrtemp {
   padding: 10px !important;
   padding-left: 15px !important;
