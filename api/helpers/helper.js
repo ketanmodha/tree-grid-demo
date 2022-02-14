@@ -19,11 +19,11 @@ function mustBeInArray(array, id) {
         const row = array.find(r => r.id == id);
         if (!row) {
             reject({
-                message: 'ID is not good',
+                message: 'Please use valid ID',
                 status: 404
             });
         }
-        resolve(row)
+        resolve(row);
     })
 }
 
