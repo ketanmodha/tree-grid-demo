@@ -1,5 +1,3 @@
-const { promise } = require('protractor')
-const { hasOwnProperty } = require('tslint/lib/utils')
 let posts = require('../data/posts.json')
 const filename = './data/posts.json'
 const helper = require('../helpers/helper.js')

@@ -1,1 +1,110 @@
-[{"id":1,"title":"Task ID","isSort":true,"Datatype":"number","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"},{"id":2,"title":"taskName","isSort":true,"Datatype":"number","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"},{"id":3,"title":"startDate","isSort":true,"Datatype":"datetime","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"},{"id":4,"title":"endDate","isSort":true,"Datatype":"datetime","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"},{"id":5,"title":"progress","isSort":true,"Datatype":"number","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"},{"id":6,"createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","title":"duration","isSort":true,"Datatype":"number","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px"},{"id":7,"title":"priority","isSort":true,"Datatype":"String","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"},{"id":8,"title":"approved","isSort":true,"Datatype":"boolean","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"},{"id":9,"title":"subtasks","isSort":true,"Datatype":"JSON","ColumnAlignment":"Right","ColumnBackgroundColor":"#FFFFF","ColumnTextColor":"#FFFFF","FontSize":"12px","createdAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)","updatedAt":"Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"}]
+[
+    {
+        "id": 1,
+        "title": "Task ID",
+        "isSort": true,
+        "Datatype": "number",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    },
+    {
+        "id": 2,
+        "title": "taskName",
+        "isSort": true,
+        "Datatype": "number",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    },
+    {
+        "id": 3,
+        "title": "startDate",
+        "isSort": true,
+        "Datatype": "datetime",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    },
+    {
+        "id": 4,
+        "title": "endDate",
+        "isSort": true,
+        "Datatype": "datetime",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    },
+    {
+        "id": 5,
+        "title": "progress",
+        "isSort": true,
+        "Datatype": "number",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    },
+    {
+        "id": 6,
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "title": "duration",
+        "isSort": true,
+        "Datatype": "number",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px"
+    },
+    {
+        "id": 7,
+        "title": "priority",
+        "isSort": true,
+        "Datatype": "String",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    },
+    {
+        "id": 8,
+        "title": "approved",
+        "isSort": true,
+        "Datatype": "boolean",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    },
+    {
+        "id": 9,
+        "title": "subtasks",
+        "isSort": true,
+        "Datatype": "JSON",
+        "ColumnAlignment": "Right",
+        "ColumnBackgroundColor": "#FFFFF",
+        "ColumnTextColor": "#FFFFF",
+        "FontSize": "12px",
+        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
+        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+    }
+]
