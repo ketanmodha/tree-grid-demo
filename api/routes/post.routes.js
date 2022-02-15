@@ -1,9 +1,9 @@
-const express = require('express')
-const router = express.Router()
-const post = require('../models/post.model')
-const m = require('../helpers/middlewares')
+const express = require('express');
+const post = require('../models/post.model');
 
-/* All posts */
+const router = express.Router();
+
+/* Get all posts */
 router.get('/', async (req, res) => {
     await post.getPosts()
         .then(posts => res.json(posts))
@@ -16,8 +16,8 @@ router.get('/', async (req, res) => {
         })
 })
 
-/* A post by id */
-router.get('/:id', m.mustBeInteger, async (req, res) => {
+/* Get post by id */
+router.get('/:id', async (req, res) => {
     const id = req.params.id
 
     await post.getPost(id)
@@ -32,17 +32,44 @@ router.get('/:id', m.mustBeInteger, async (req, res) => {
 })
 
 /* Insert a new post */
+/**
+ * Body:
+ * {
+ *      refColumnId: "",
+ *      isChild: false,
+ *      columnDataToAdd: [{
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81" : 1,
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82" : "Task One",
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f83" : "2022/02/14", -- YYYY/MM/DD
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f84" : "5",
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f85" : "ACTIVE",
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f86" : false,
+ *          childrens: []
+ *      }]
+ * }
+ */
 router.post('/', async (req, res) => {
     await post.insertPost(req.body)
         .then(post => res.status(201).json({
-            message: `The post #${post.id} has been created`,
+            message: `The posts has been updated`,
             content: post
         }))
         .catch(err => res.status(500).json({ message: err.message }))
 })
 
-/* Update a post */
-router.put('/:id', m.mustBeInteger, async (req, res) => {
+/**
+ * Update a post
+ * Body:
+ * {
+ *      "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81" : 1,
+ *      "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82" : "Task One",
+ *      "796f1f4f-8683-4dc9-8de8-9fbe5adc4f83" : "2022/02/14", -- YYYY/MM/DD
+ *      "796f1f4f-8683-4dc9-8de8-9fbe5adc4f84" : "5",
+ *      "796f1f4f-8683-4dc9-8de8-9fbe5adc4f85" : "ACTIVE",
+ *      "796f1f4f-8683-4dc9-8de8-9fbe5adc4f86" : false,
+ * }
+ */
+router.put('/:id', async (req, res) => {
     const id = req.params.id
 
     await post.updatePost(id, req.body)
@@ -58,13 +85,15 @@ router.put('/:id', m.mustBeInteger, async (req, res) => {
         })
 })
 
-/* Delete a post */
-router.delete('/:id', m.mustBeInteger, async (req, res) => {
-    const id = req.params.id
-
-    await post.deletePost(id)
-        .then(post => res.json({
-            message: `The post #${id} has been deleted`
+/* Delete Posts */
+/**
+ * Body:
+ * [ "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81", "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82" ]
+ */
+router.delete('/', async (req, res) => {
+    await post.deletePosts(req.body)
+        .then(() => res.json({
+            message: `The posts has been deleted`
         }))
         .catch(err => {
             console.log("err");

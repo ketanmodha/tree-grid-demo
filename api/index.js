@@ -4,6 +4,9 @@ const morgan = require('morgan')
 // App
 const app = express()
 // Morgan
+
+const PORT = 8080;
+
 app.use(morgan('tiny'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -13,4 +16,6 @@ app.get('/', (req, res) => {
     res.json({ message: 'Hello world' })
 })
 // Starting server
-app.listen('8080')
+app.listen(PORT, () => {
+    console.log(`listening on port ${PORT}`)
+})
