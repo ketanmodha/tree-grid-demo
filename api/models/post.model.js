@@ -30,7 +30,7 @@ function insertPost(newPost) {
 
         // Add empty childrens if do not have childrens
         columnDataToAdd = columnDataToAdd.map(i => {
-            i.id = uuidv4();
+            i.id = i.id ? i.id : uuidv4();
             i.createdAt = helper.newDate();
             i.updatedAt = helper.newDate();
             if (!i.childrens) {
@@ -133,7 +133,7 @@ function deletePosts(postIds) {
 
 // Add as childern to posts
 const addAsChildren = (array, id, object) => array && array.map(o => o.id === id
-    ? { ...o, childrens: [...o.childrens.concat(object)] }
+    ? { ...o, childrens: o.childrens && o.childrens.length > 0 ? [...o.childrens.concat(object)] : [] }
     : { ...o, childrens: addAsChildren(o.childrens, id, object) }
 );
 
@@ -160,7 +160,7 @@ const mapChildrens = (data, refColumnId, columnDataToAdd) => {
 
 // Format insert childerns
 const formatInsertChildren = (data) => {
-    data.id = uuidv4();
+    data.id = data.id ? data.id : uuidv4();
     data.createdAt = helper.newDate();
     data.updatedAt = helper.newDate();
     if (data.childrens) {

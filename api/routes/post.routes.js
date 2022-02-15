@@ -106,4 +106,46 @@ router.delete('/', async (req, res) => {
         })
 })
 
+/* Drag and Drop post to another place */
+/**
+ * Body:
+ * {
+ *      refColumnId: "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81",
+ *      isChild: true,
+ *      columnDataToAdd: [{
+ *          "id" : "1",
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81" : 1,
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82" : "Task One",
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f83" : "2022/02/14", -- YYYY/MM/DD
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f84" : "5",
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f85" : "ACTIVE",
+ *          "796f1f4f-8683-4dc9-8de8-9fbe5adc4f86" : false,
+ *          childrens: []
+ *      }]
+ * }
+ */
+router.post('/drag-drop', async (req, res) => {
+
+    const dragPostId = req.body.columnDataToAdd[0].id;
+
+    await post.deletePosts([dragPostId])
+        .then(async () => {
+            await post.insertPost(req.body)
+                .then(post => res.status(201).json({
+                    message: `The posts has been updated`,
+                    content: post
+                }))
+                .catch(err => res.status(500).json({ message: err.message }))
+        })
+        .catch(err => {
+            console.log("err");
+            if (err.status == 404) {
+                res.status(err.status).json({ message: err.message })
+            } else {
+                res.status(500).json({ message: err.message })
+            }
+
+        })
+})
+
 module.exports = router
