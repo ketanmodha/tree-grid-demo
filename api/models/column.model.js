@@ -153,9 +153,19 @@ function deleteColumn(id) {
         helper.mustBeInArray(columns, id)
             .then(() => {
                 columns = columns.filter(p => p.id !== id);
-                helper.writeJSONFile(filename, columns);
-                // TODO : Create logic to remove data from posts for this column
-                resolve();
+
+                posts.map(item => {
+                    delete item[id];
+                    return item;
+                })
+
+                try {
+                    helper.writeJSONFile(filename, columns);
+                    helper.writeJSONFile(filename_posts, posts);
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
             })
             .catch(err => reject(err));
     })
