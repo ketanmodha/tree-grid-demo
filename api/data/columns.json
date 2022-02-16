@@ -12,8 +12,8 @@
         "sortDirection": "ASC",
         "isHidden": false,
         "isFreezed": false,
-        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
-        "updatedAt": "Mon Feb 14 2022 15:22:57 GMT+0530 (India Standard Time)"
+        "createdAt": "2022-02-16T12:31:55+05:30",
+        "updatedAt": "2022-02-16T12:31:55+05:30"
     },
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82",
@@ -28,24 +28,24 @@
         "sortDirection": "ASC",
         "isHidden": false,
         "isFreezed": false,
-        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
-        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+        "createdAt": "2022-02-16T12:31:55+05:30",
+        "updatedAt": "2022-02-16T12:31:55+05:30"
     },
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f83",
         "title": "Start Date",
         "dataType": "DATE",
-        "defaultValue": null,
+        "defaultValue": "",
         "alignment": "RIGHT",
         "backgroundColor": "#FFFFF",
         "textColor": "#FFFFF",
         "fontSize": "12px",
         "isSorted": true,
-        "sortDirection": "ASC",
+        "sortDirection": null,
         "isHidden": false,
         "isFreezed": false,
-        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
-        "updatedAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)"
+        "createdAt": "2022-02-16T12:31:55+05:30",
+        "updatedAt": "2022-02-16T15:39:46+05:30"
     },
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f84",
@@ -60,13 +60,13 @@
         "sortDirection": null,
         "isHidden": true,
         "isFreezed": false,
-        "createdAt": "Wed Feb 09 2022 18:03:27 GMT+0530 (India Standard Time)",
-        "updatedAt": "Mon Feb 14 2022 15:50:31 GMT+0530 (India Standard Time)"
+        "createdAt": "2022-02-16T12:31:55+05:30",
+        "updatedAt": "2022-02-16T12:31:55+05:30"
     },
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f85",
         "title": "Task Status",
-        "dataType": "STRING",
+        "dataType": "TEXT",
         "defaultValue": "1",
         "alignment": "RIGHT",
         "backgroundColor": "#FFFFF",
@@ -76,14 +76,14 @@
         "sortDirection": "DESC",
         "isHidden": false,
         "isFreezed": true,
-        "createdAt": "Mon Feb 14 2022 14:49:09 GMT+0530 (India Standard Time)",
-        "updatedAt": "Mon Feb 14 2022 15:50:31 GMT+0530 (India Standard Time)"
+        "createdAt": "2022-02-16T12:31:55+05:30",
+        "updatedAt": "2022-02-16T12:31:55+05:30"
     },
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f86",
-        "title": "Is Deleted ?",
-        "dataType": "BOOLEAN",
-        "defaultValue": false,
+        "title": "Is Deleted",
+        "dataType": "NUMBER",
+        "defaultValue": 1,
         "alignment": "RIGHT",
         "backgroundColor": "#FFFFF",
         "textColor": "#FFFFF",
@@ -92,7 +92,7 @@
         "sortDirection": "ASC",
         "isHidden": false,
         "isFreezed": false,
-        "createdAt": "Mon Feb 14 2022 16:48:35 GMT+0530 (India Standard Time)",
-        "updatedAt": "Mon Feb 14 2022 16:49:20 GMT+0530 (India Standard Time)"
+        "updatedAt": "2022-02-16T12:31:55+05:30",
+        "createdAt": "2022-02-16T12:31:55+05:30"
     }
 ]

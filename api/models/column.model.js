@@ -1,22 +1,24 @@
+const fs = require('fs');
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
+
 const helper = require('../helpers/helper.js');
 
 let columns = require('../data/columns.json');
 let posts = require('../data/posts.json');
 
 const filename = './data/columns.json';
+const dataPath = './data/columns.json';
 const filename_posts = './data/posts.json';
 
 function getColumns() {
     return new Promise((resolve, reject) => {
-        if (columns.length === 0) {
-            reject({
-                message: 'no columns available',
-                status: 202
-            });
+        try {
+            const columns = fs.readFileSync(dataPath);
+            resolve(JSON.parse(columns));
+        } catch (error) {
+            reject(error);
         }
-        resolve(columns);
     });
 }
 
@@ -30,10 +32,9 @@ function getColumn(id) {
 
 function insertColumn(newcolumn) {
     return new Promise((resolve, reject) => {
-        // const id = { id: uuidv4() }
         const dateCreateUpdate = {
-            createdAt: helper.newDate(),
-            updatedAt: helper.newDate()
+            createdAt: helper.getNewDate(),
+            updatedAt: helper.getNewDate(),
         }
         newcolumn = {
             id: uuidv4(),
@@ -46,32 +47,42 @@ function insertColumn(newcolumn) {
     })
 }
 
-function runRecursive(input, columnTitle, columnDatatype) {
+function runRecursive(input, id, newDataType, prevDataType, defaultValue) {
     return new Promise((resolve, reject) => {
         input.forEach(element => {
-            if (columnDatatype == 'TEXT') {
-                element[columnTitle] = String(element[columnTitle]);
+
+            element[id] = parseDataToDIfferentFormat(element[id], newDataType, prevDataType, defaultValue);
+
+            if (element.childrens && element.childrens.length > 0) {
+                return runRecursive(element.childrens, id, newDataType, prevDataType, defaultValue);
             }
-            if (columnDatatype == 'NUMBER') {
-                element[columnTitle] = parseInt(element[columnTitle]);
-            }
-            if (columnDatatype == 'BOOLEAN') {
-                element[columnTitle] = Boolean(element[columnTitle]);
-            }
-            if (columnDatatype == 'DATE') {
-                if (moment(element[columnTitle]).isValid()) {
-                    element[columnTitle] = new Date(element[columnTitle]);
-                } else {
-                    element[columnTitle] = new Date();
-                }
-            }
-            if (element.hasOwnProperty('subtasks')) {
-                let data = element.subtasks;
-                return runRecursive(data, columnTitle, columnDatatype);
-            }
+
         });
         resolve(input);
     });
+}
+
+const parseDataToDIfferentFormat = (value, newDataType, prevDataType, defaultValue) => {
+
+    if (newDataType == 'TEXT') {
+        return String(value);
+    } else if (newDataType == 'NUMBER') {
+        if (prevDataType == "TEXT") {
+            return parseInt(value);
+        } else {
+            return defaultValue;
+        }
+    } else if (newDataType == 'BOOLEAN') {
+        return defaultValue;
+    } else if (newDataType == 'DATE') {
+        if (moment(value, ["YYYY/MM/DD", moment.ISO_8601]).isValid()) {
+            return helper.getNewDate(value);
+        } else {
+            return defaultValue;
+        }
+    } else {
+        return value;
+    }
 }
 
 function updateColumn(id, newcolumn) {
@@ -79,74 +90,69 @@ function updateColumn(id, newcolumn) {
 
         helper.mustBeInArray(columns, id)
             .then(post => {
-                const index = columns.findIndex(p => p.id == post.id)
-                id = { id: post.id }
+                const index = columns.findIndex(p => p.id == post.id);
                 const dateCreateUpdate = {
-                    createdAt: post.createdAt,
-                    updatedAt: helper.newDate()
+                    updatedAt: helper.getNewDate(),
                 }
 
-                if (columns[index].dataType != newcolumn.dataType) {
+                const defaultValue = newcolumn.defaultValue;
+                const newDataType = newcolumn.dataType;
+                const prevDataType = columns[index].dataType;
 
-                    // TODO : Verify logics to update existing date
-                    new Promise((resolve, reject) => {
-                        posts.forEach(element => {
-                            if (newcolumn.dataType == 'TEXT') {
-                                element[newcolumn.title] = String(element[newcolumn.title])
-                                if (element['subtasks'].length > 0) {
-                                    runRecursive(element['subtasks'], newcolumn.title, newcolumn.dataType).then((f_data) => {
-                                        resolve(posts);
-                                    });
-                                };
-                            }
-                            if (newcolumn.dataType == 'NUMBER') {
-                                element[newcolumn.title] = parseInt(element[newcolumn.title])
-                                if (element['subtasks'].length > 0) {
-                                    runRecursive(element['subtasks'], newcolumn.title, newcolumn.dataType).then((f_data) => {
-                                        resolve(posts);
-                                    });
-                                };
-                            }
-                            if (newcolumn.dataType == 'DATE') {
-                                if (moment(element[newcolumn.title]).isValid()) {
-                                    element[newcolumn.title] = new Date(element[newcolumn.title])
-                                } else {
-                                    element[newcolumn.title] = new Date();
-                                }
-                                if (element['subtasks'].length > 0) {
-                                    runRecursive(element['subtasks'], newcolumn.title, newcolumn.dataType).then((f_data) => {
-                                        resolve(posts);
-                                    });
-                                };
-                            }
-                            if (newcolumn.dataType == 'BOOLEAN') {
-                                element[newcolumn.title] = Boolean(element[newcolumn.title])
-                                if (element['subtasks'].length > 0) {
-                                    runRecursive(element['subtasks'], newcolumn.title, newcolumn.dataType).then((f_data) => {
-                                        resolve(posts);
-                                    });
-                                };
-                            }
-                        });
+                if (prevDataType != newDataType) {
+                    posts = posts.map(post => {
+                        const formatedValue = parseDataToDIfferentFormat(post[id], newDataType, prevDataType, defaultValue);
 
-                    }).then((data) => {
-                        console.log("POSTs are updated");
-                        helper.writeJSONFile(filename_posts, data)
-                    }).catch(err => {
-                        console.log("ERR::", err)
+                        let newPost = {
+                            ...post,
+                            [`${id}`]: formatedValue,
+                            childrens: post.childrens ? [...post.childrens] : [],
+                            updatedAt: helper.getNewDate()
+                        }
+
+                        newPost.childrens = updateChildrens(post.childrens, id, newDataType, prevDataType, defaultValue);
+                        return newPost;
                     });
                 }
 
-                columns[index] = { ...id, ...newcolumn, ...dateCreateUpdate }
-                helper.writeJSONFile(filename, columns)
+                columns[index] = { ...columns[index], ...newcolumn, ...dateCreateUpdate };
 
-                resolve(columns[index]);
+                try {
+                    helper.writeJSONFile(filename, columns);
+
+                    if (prevDataType != newDataType) {
+                        helper.writeJSONFile(filename_posts, posts);
+                    }
+
+                    resolve(columns[index]);
+                } catch (error) {
+                    reject(error);
+                }
             })
             .catch(err => {
                 reject(err);
             })
     })
 }
+
+// Update childerns
+const updateChildrens = (childrens, id, newDataType, prevDataType, defaultValue) => {
+    if (childrens) {
+        childrens = childrens.map(post => {
+            const formatedValue = parseDataToDIfferentFormat(post[id], newDataType, prevDataType, defaultValue);
+            let newPost = {
+                ...post,
+                [`${id}`]: formatedValue,
+                childrens: post.childrens ? [...post.childrens] : [],
+                updatedAt: helper.getNewDate()
+            }
+
+            newPost.childrens = updateChildrens(post.childrens, id, newDataType, prevDataType, defaultValue);
+            return newPost;
+        })
+    }
+    return childrens;
+};
 
 function deleteColumn(id) {
     return new Promise((resolve, reject) => {
@@ -178,7 +184,7 @@ function visibleColumns(columnsVisible) {
             columnsVisible.map(column => {
                 const columnFound = columns.find(i => i.id === column.columnId);
                 columnFound.isHidden = column.isHidden;
-                columnFound.updatedAt = helper.newDate();
+                columnFound.updatedAt = helper.getNewDate();
             })
         }
 
@@ -197,7 +203,7 @@ function freezeColumn(column) {
 
         const columnFound = columns.find(i => i.id === column.columnId);
         columnFound.isFreezed = column.freeze;
-        columnFound.updatedAt = helper.newDate();
+        columnFound.updatedAt = helper.getNewDate();
 
         try {
             helper.writeJSONFile(filename, columns);
@@ -216,7 +222,7 @@ function sortingColumns(columnsSorting) {
                 const columnFound = columns.find(i => i.id === column.columnId);
                 columnFound.isSorted = column.isSorted;
                 columnFound.sortDirection = column.isSorted ? column.sortOrder : null;
-                columnFound.updatedAt = helper.newDate();
+                columnFound.updatedAt = helper.getNewDate();
             })
         }
 

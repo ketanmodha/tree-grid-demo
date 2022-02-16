@@ -1,5 +1,14 @@
+const moment = require('moment');
 const fs = require('fs');
-const newDate = () => new Date().toString();
+
+const getNewDate = (value = null) => {
+    if (value) {
+        return moment(value, ["YYYY/MM/DD", moment.ISO_8601]).format();
+    } else {
+        // return new Date().toString();
+        return moment().format();
+    }
+}
 
 const getNewId = (array) => {
     if (array.length > 0) {
@@ -37,7 +46,7 @@ function writeJSONFile(filename, content) {
 
 module.exports = {
     getNewId,
-    newDate,
+    getNewDate,
     mustBeInArray,
     writeJSONFile
 };

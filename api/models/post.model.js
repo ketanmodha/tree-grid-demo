@@ -1,14 +1,21 @@
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
 const helper = require('../helpers/helper.js');
 
 const filename = './data/posts.json';
+const dataPath = './data/posts.json';
 
 let posts = require('../data/posts.json');
 
 function getPosts() {
     return new Promise((resolve) => {
-        resolve(posts);
+        try {
+            const posts = fs.readFileSync(dataPath);
+            resolve(JSON.parse(posts));
+        } catch (error) {
+            reject(error);
+        }
     })
 }
 
@@ -31,8 +38,8 @@ function insertPost(newPost) {
         // Add empty childrens if do not have childrens
         columnDataToAdd = columnDataToAdd.map(i => {
             i.id = i.id ? i.id : uuidv4();
-            i.createdAt = helper.newDate();
-            i.updatedAt = helper.newDate();
+            i.createdAt = helper.getNewDate();
+            i.updatedAt = helper.getNewDate();
             if (!i.childrens) {
                 i.childrens = [];
             } else {
@@ -71,7 +78,6 @@ function insertPost(newPost) {
         try {
             helper.writeJSONFile(filename, posts);
             resolve(columnDataToAdd);
-            // resolve(posts);
         } catch (error) {
             reject(error);
         }
@@ -88,7 +94,7 @@ function updatePost(id, updateData) {
                     ...post,
                     ...updateData,
                     childrens: post.childrens ? [...post.childrens] : [],
-                    updatedAt: helper.newDate()
+                    updatedAt: helper.getNewDate()
                 }
 
                 return newPost;
@@ -154,15 +160,14 @@ const mapChildrens = (data, refColumnId, columnDataToAdd) => {
             data.childrens.splice(rootIndexFound + j, 0, item);
             j++;
         })
-        // data.childrens.splice(rootIndexFound + 1, 0, columnDataToAdd)
     }
 };
 
 // Format insert childerns
 const formatInsertChildren = (data) => {
     data.id = data.id ? data.id : uuidv4();
-    data.createdAt = helper.newDate();
-    data.updatedAt = helper.newDate();
+    data.createdAt = helper.getNewDate();
+    data.updatedAt = helper.getNewDate();
     if (data.childrens) {
         data.childrens.map(item => {
             formatInsertChildren(item);
@@ -180,7 +185,7 @@ const updateChildrens = (childrens, id, updateData) => {
                     ...post,
                     ...updateData,
                     childrens: post.childrens ? [...post.childrens] : [],
-                    updatedAt: helper.newDate()
+                    updatedAt: helper.getNewDate()
                 }
 
                 return newPost;
