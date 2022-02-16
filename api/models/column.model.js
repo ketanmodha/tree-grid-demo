@@ -7,14 +7,13 @@ const helper = require('../helpers/helper.js');
 let columns = require('../data/columns.json');
 let posts = require('../data/posts.json');
 
-const filename = './data/columns.json';
-const dataPath = './data/columns.json';
-const filename_posts = './data/posts.json';
+const dataPathColumns = './data/columns.json';
+const dataPathPosts = './data/posts.json';
 
 function getColumns() {
     return new Promise((resolve, reject) => {
         try {
-            const columns = fs.readFileSync(dataPath);
+            const columns = fs.readFileSync(dataPathColumns);
             resolve(JSON.parse(columns));
         } catch (error) {
             reject(error);
@@ -42,24 +41,9 @@ function insertColumn(newcolumn) {
             ...dateCreateUpdate
         };
         columns.push(newcolumn);
-        helper.writeJSONFile(filename, columns);
+        helper.writeJSONFile(dataPathColumns, columns);
         resolve(newcolumn);
     })
-}
-
-function runRecursive(input, id, newDataType, prevDataType, defaultValue) {
-    return new Promise((resolve, reject) => {
-        input.forEach(element => {
-
-            element[id] = parseDataToDIfferentFormat(element[id], newDataType, prevDataType, defaultValue);
-
-            if (element.childrens && element.childrens.length > 0) {
-                return runRecursive(element.childrens, id, newDataType, prevDataType, defaultValue);
-            }
-
-        });
-        resolve(input);
-    });
 }
 
 const parseDataToDIfferentFormat = (value, newDataType, prevDataType, defaultValue) => {
@@ -118,10 +102,10 @@ function updateColumn(id, newcolumn) {
                 columns[index] = { ...columns[index], ...newcolumn, ...dateCreateUpdate };
 
                 try {
-                    helper.writeJSONFile(filename, columns);
+                    helper.writeJSONFile(dataPathColumns, columns);
 
                     if (prevDataType != newDataType) {
-                        helper.writeJSONFile(filename_posts, posts);
+                        helper.writeJSONFile(dataPathPosts, posts);
                     }
 
                     resolve(columns[index]);
@@ -166,8 +150,8 @@ function deleteColumn(id) {
                 })
 
                 try {
-                    helper.writeJSONFile(filename, columns);
-                    helper.writeJSONFile(filename_posts, posts);
+                    helper.writeJSONFile(dataPathColumns, columns);
+                    helper.writeJSONFile(dataPathPosts, posts);
                     resolve();
                 } catch (error) {
                     reject(error);
@@ -189,7 +173,7 @@ function visibleColumns(columnsVisible) {
         }
 
         try {
-            helper.writeJSONFile(filename, columns);
+            helper.writeJSONFile(dataPathColumns, columns);
             resolve(true);
         } catch (err) {
             reject(err);
@@ -206,7 +190,7 @@ function freezeColumn(column) {
         columnFound.updatedAt = helper.getNewDate();
 
         try {
-            helper.writeJSONFile(filename, columns);
+            helper.writeJSONFile(dataPathColumns, columns);
             resolve(true);
         } catch (err) {
             reject(err);
@@ -227,7 +211,7 @@ function sortingColumns(columnsSorting) {
         }
 
         try {
-            helper.writeJSONFile(filename, columns);
+            helper.writeJSONFile(dataPathColumns, columns);
             resolve(true);
         } catch (err) {
             reject(err);

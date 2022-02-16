@@ -3,15 +3,14 @@ const { v4: uuidv4 } = require('uuid');
 
 const helper = require('../helpers/helper.js');
 
-const filename = './data/posts.json';
-const dataPath = './data/posts.json';
+const dataPathPosts = './data/posts.json';
 
 let posts = require('../data/posts.json');
 
 function getPosts() {
     return new Promise((resolve) => {
         try {
-            const posts = fs.readFileSync(dataPath);
+            const posts = fs.readFileSync(dataPathPosts);
             resolve(JSON.parse(posts));
         } catch (error) {
             reject(error);
@@ -76,7 +75,7 @@ function insertPost(newPost) {
         }
 
         try {
-            helper.writeJSONFile(filename, posts);
+            helper.writeJSONFile(dataPathPosts, posts);
             resolve(columnDataToAdd);
         } catch (error) {
             reject(error);
@@ -106,7 +105,7 @@ function updatePost(id, updateData) {
         })
 
         try {
-            helper.writeJSONFile(filename, posts);
+            helper.writeJSONFile(dataPathPosts, posts);
             resolve();
         } catch (error) {
             reject(error);
@@ -129,7 +128,7 @@ function deletePosts(postIds) {
         });
 
         try {
-            helper.writeJSONFile(filename, posts)
+            helper.writeJSONFile(dataPathPosts, posts)
             resolve();
         } catch (error) {
             reject(error);
