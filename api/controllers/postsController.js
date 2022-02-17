@@ -29,7 +29,6 @@ function insertPost(newPost) {
     const refColumnId = newPost.refColumnId;
     const isChild = newPost.isChild;
     let columnDataToAdd = newPost.columnDataToAdd;
-
     
     return new Promise((resolve, reject) => {
         let postsDb = dbJson.getPosts();
@@ -137,8 +136,8 @@ function deletePosts(postIds) {
 }
 
 // Add as childern to posts
-const addAsChildren = (array, id, object) => array && array.map(o => o.id === id
-    ? { ...o, childrens: o.childrens && o.childrens.length > 0 ? [...o.childrens.concat(object)] : [] }
+const addAsChildren = (array, id, object) => array && array.map(o => o.id == id
+    ? { ...o, childrens: o.childrens && o.childrens.length > 0 ? [...o.childrens.concat(object)] : object }
     : { ...o, childrens: addAsChildren(o.childrens, id, object) }
 );
 
