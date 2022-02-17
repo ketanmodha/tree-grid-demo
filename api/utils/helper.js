@@ -1,6 +1,10 @@
 const moment = require('moment');
 const fs = require('fs');
 
+const dataTypes = ["TEXT", "NUMBER", "DATE", "BOOLEAN"];
+const alignments = ["LEFT", "CENTER", "RIGHT", "JUSTIFY"];
+const sortDirections = ["ASC", "DESC"];
+
 const getNewDate = (value = null) => {
     if (value) {
         return moment(value, ["YYYY/MM/DD", moment.ISO_8601]).format();
@@ -23,7 +27,7 @@ const getNewId = (array) => {
     }
 }
 
-function mustBeInArray(array, id) {
+const mustBeInArray = (array, id) => {
     return new Promise((resolve, reject) => {
         const row = array.find(r => r.id == id);
         if (!row) {
@@ -36,17 +40,12 @@ function mustBeInArray(array, id) {
     })
 }
 
-function writeJSONFile(filename, content) {
-    fs.writeFileSync(filename, JSON.stringify(content), 'utf8', (err) => {
-        if (err) {
-            console.log(err);
-        }
-    })
-}
-
 module.exports = {
+    dataTypes,
+    alignments,
+    sortDirections,
+
     getNewId,
     getNewDate,
     mustBeInArray,
-    writeJSONFile
 };

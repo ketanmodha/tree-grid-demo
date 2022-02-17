@@ -1,26 +1,24 @@
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
-const helper = require('../helpers/helper.js');
-
-const dataPathPosts = './data/posts.json';
-
-let posts = require('../data/posts.json');
+const dbJson = require('../data');
+const helper = require('../utils/helper.js');
 
 function getPosts() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         try {
-            const posts = fs.readFileSync(dataPathPosts);
-            resolve(JSON.parse(posts));
+            const postsDb = dbJson.getPosts();
+            resolve(postsDb);
         } catch (error) {
             reject(error);
         }
-    })
+    });
 }
 
 function getPost(id) {
     return new Promise((resolve, reject) => {
-        helper.mustBeInArray(posts, id)
+        let postsDb = dbJson.getPosts();
+        helper.mustBeInArray(postsDb, id)
             .then(post => resolve(post))
             .catch(err => reject(err))
     })
@@ -32,7 +30,9 @@ function insertPost(newPost) {
     const isChild = newPost.isChild;
     let columnDataToAdd = newPost.columnDataToAdd;
 
+    
     return new Promise((resolve, reject) => {
+        let postsDb = dbJson.getPosts();
 
         // Add empty childrens if do not have childrens
         columnDataToAdd = columnDataToAdd.map(i => {
@@ -50,32 +50,32 @@ function insertPost(newPost) {
         // No reference Id found - Then add to bottom of array - This can occurs if not data is added , i.e. First Item
         // First Post
         if (!refColumnId) {
-            posts = posts.concat(columnDataToAdd);
+            postsDb = postsDb.concat(columnDataToAdd);
         } else if (isChild === false) {
             // Add Next
             // Chech if id exist in the parent hierarchy
-            const rootIndexFound = posts.findIndex(item => item.id === refColumnId);
+            const rootIndexFound = postsDb.findIndex(item => item.id === refColumnId);
 
             if (rootIndexFound != -1) {
                 // ID matches in parent hierarchy
                 let j = 1;
                 columnDataToAdd.map(item => {
-                    posts.splice(rootIndexFound + j, 0, item);
+                    postsDb.splice(rootIndexFound + j, 0, item);
                     j++;
                 })
             } else {
                 // Check in children recursively for matching id
-                posts.map(item => {
+                postsDb.map(item => {
                     mapChildrens(item, refColumnId, columnDataToAdd);
                 })
             }
         } else {
             // Add as children
-            posts = addAsChildren(posts, refColumnId, columnDataToAdd);
+            postsDb = addAsChildren(postsDb, refColumnId, columnDataToAdd);
         }
 
         try {
-            helper.writeJSONFile(dataPathPosts, posts);
+            dbJson.writeData("POSTS", postsDb);
             resolve(columnDataToAdd);
         } catch (error) {
             reject(error);
@@ -85,8 +85,8 @@ function insertPost(newPost) {
 
 function updatePost(id, updateData) {
     return new Promise((resolve, reject) => {
-
-        posts = posts.map(post => {
+        let postsDb = dbJson.getPosts();
+        postsDb = postsDb.map(post => {
             let newPost = post;
             if (post.id == id) {
                 newPost = {
@@ -105,7 +105,7 @@ function updatePost(id, updateData) {
         })
 
         try {
-            helper.writeJSONFile(dataPathPosts, posts);
+            dbJson.writeData("POSTS", postsDb);
             resolve();
         } catch (error) {
             reject(error);
@@ -115,8 +115,8 @@ function updatePost(id, updateData) {
 
 function deletePosts(postIds) {
     return new Promise((resolve, reject) => {
-
-        posts = posts.filter(p => {
+        let postsDb = dbJson.getPosts();
+        postsDb = postsDb.filter(p => {
             if (p.childrens) {
                 p.childrens = deleteChildrens(p.childrens, postIds)
             }
@@ -128,7 +128,7 @@ function deletePosts(postIds) {
         });
 
         try {
-            helper.writeJSONFile(dataPathPosts, posts)
+            dbJson.writeData("POSTS", postsDb)
             resolve();
         } catch (error) {
             reject(error);

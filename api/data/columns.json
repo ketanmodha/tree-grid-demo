@@ -1,7 +1,7 @@
 [
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81",
-        "title": "Task ID",
+        "title": "Task #",
         "dataType": "NUMBER",
         "defaultValue": "1",
         "alignment": "RIGHT",
@@ -56,12 +56,12 @@
         "backgroundColor": "#FFFFF",
         "textColor": "#FFFFF",
         "fontSize": "12px",
-        "isSorted": false,
-        "sortDirection": null,
-        "isHidden": true,
+        "isSorted": true,
+        "sortDirection": "ASC",
+        "isHidden": false,
         "isFreezed": false,
         "createdAt": "2022-02-16T12:31:55+05:30",
-        "updatedAt": "2022-02-16T12:31:55+05:30"
+        "updatedAt": "2022-02-16T19:09:53+05:30"
     },
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f85",
@@ -73,26 +73,26 @@
         "textColor": "#FFFFF",
         "fontSize": "12px",
         "isSorted": true,
-        "sortDirection": "DESC",
+        "sortDirection": "ASC",
         "isHidden": false,
-        "isFreezed": true,
+        "isFreezed": false,
         "createdAt": "2022-02-16T12:31:55+05:30",
-        "updatedAt": "2022-02-16T12:31:55+05:30"
+        "updatedAt": "2022-02-16T19:09:53+05:30"
     },
     {
         "id": "796f1f4f-8683-4dc9-8de8-9fbe5adc4f86",
         "title": "Is Deleted",
-        "dataType": "NUMBER",
-        "defaultValue": 1,
+        "dataType": "BOOEALN",
+        "defaultValue": false,
         "alignment": "RIGHT",
         "backgroundColor": "#FFFFF",
         "textColor": "#FFFFF",
         "fontSize": "12px",
         "isSorted": true,
         "sortDirection": "ASC",
-        "isHidden": false,
+        "isHidden": true,
         "isFreezed": false,
-        "updatedAt": "2022-02-16T12:31:55+05:30",
+        "updatedAt": "2022-02-16T19:05:59+05:30",
         "createdAt": "2022-02-16T12:31:55+05:30"
     }
 ]

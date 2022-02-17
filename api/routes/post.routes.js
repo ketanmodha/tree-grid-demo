@@ -1,11 +1,12 @@
 const express = require('express');
-const post = require('../models/post.model');
+
+const postsController = require('../controllers/postsController');
 
 const router = express.Router();
 
 /* Get all posts */
 router.get('/', async (req, res) => {
-    await post.getPosts()
+    await postsController.getPosts()
         .then(posts => res.json(posts))
         .catch(err => {
             if (err.status) {
@@ -20,7 +21,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const id = req.params.id
 
-    await post.getPost(id)
+    await postsController.getPost(id)
         .then(post => res.json(post))
         .catch(err => {
             if (err.status) {
@@ -49,7 +50,7 @@ router.get('/:id', async (req, res) => {
  * }
  */
 router.post('/', async (req, res) => {
-    await post.insertPost(req.body)
+    await postsController.insertPost(req.body)
         .then(post => res.status(201).json({
             message: `The posts has been updated`,
             content: post
@@ -72,7 +73,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const id = req.params.id
 
-    await post.updatePost(id, req.body)
+    await postsController.updatePost(id, req.body)
         .then(post => res.json({
             message: `The post #${id} has been updated`,
             content: post
@@ -91,7 +92,7 @@ router.put('/:id', async (req, res) => {
  * [ "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81", "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82" ]
  */
 router.delete('/', async (req, res) => {
-    await post.deletePosts(req.body)
+    await postsController.deletePosts(req.body)
         .then(() => res.json({
             message: `The posts has been deleted`
         }))
@@ -128,9 +129,9 @@ router.post('/drag-drop', async (req, res) => {
 
     const dragPostId = req.body.columnDataToAdd[0].id;
 
-    await post.deletePosts([dragPostId])
+    await postsController.deletePosts([dragPostId])
         .then(async () => {
-            await post.insertPost(req.body)
+            await postsController.insertPost(req.body)
                 .then(post => res.status(201).json({
                     message: `The posts has been updated`,
                     content: post

@@ -1,11 +1,12 @@
 const express = require('express');
-const column = require('../models/column.model');
+
+const columnsController = require('../controllers/columnsController');
 
 const router = express.Router();
 
 /* Get all columns */
 router.get('/', async (req, res) => {
-    await column.getColumns()
+    await columnsController.getColumns()
         .then(columns => res.json(columns))
         .catch(err => {
             if (err.status) {
@@ -20,7 +21,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const id = req.params.id
 
-    await column.getColumn(id)
+    await columnsController.getColumn(id)
         .then(column => res.json(column))
         .catch(err => {
             if (err.status) {
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res) => {
 
 /* Insert a new column */
 router.post('/', async (req, res) => {
-    await column.insertColumn(req.body)
+    await columnsController.insertColumn(req.body)
         .then(column => res.status(201).json({
             message: `The column #${column.id} has been created`,
             content: column
@@ -45,7 +46,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const id = req.params.id;
 
-    await column.updateColumn(id, req.body)
+    await columnsController.updateColumn(id, req.body)
         .then(column => res.json({
             message: `The column #${id} has been updated`,
             content: column
@@ -62,7 +63,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const id = req.params.id
 
-    await column.deleteColumn(id)
+    await columnsController.deleteColumn(id)
         .then(() => res.json({
             message: `The column #${id} has been deleted`
         }))
@@ -93,7 +94,7 @@ router.delete('/:id', async (req, res) => {
 
 router.post('/visibility', async (req, res) => {
 
-    await column.visibleColumns(req.body)
+    await columnsController.visibleColumns(req.body)
         .then(() => res.json({
             message: `The column visibility has been updated`,
         }))
@@ -115,7 +116,7 @@ router.post('/visibility', async (req, res) => {
  */
 router.post('/freeze', async (req, res) => {
 
-    await column.freezeColumn(req.body)
+    await columnsController.freezeColumn(req.body)
         .then(() => res.json({
             message: `The column freeze/unfreeze has been updated`
         }))
@@ -146,7 +147,7 @@ router.post('/freeze', async (req, res) => {
 
 router.post('/sorting', async (req, res) => {
 
-    await column.sortingColumns(req.body)
+    await columnsController.sortingColumns(req.body)
         .then(() => res.json({
             message: `The column sorting has been updated`,
         }))
