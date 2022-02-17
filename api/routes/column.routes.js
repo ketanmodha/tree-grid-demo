@@ -163,7 +163,7 @@ router.post('/freeze', async (req, res) => {
  *     "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82", ---- First column after re-order
  *     "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81", ---- Second column after re-order
  *     "796f1f4f-8683-4dc9-8de8-9fbe5adc4f83", ---- So on
- *     ....,
+ *     ....
  * ]
  */
 router.post('/column-sequencing', async (req, res) => {

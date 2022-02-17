@@ -25,7 +25,6 @@ const getPost = (id) => {
 }
 
 const insertPost = (newPost) => {
-
     const refColumnId = newPost.refColumnId;
     const isChild = newPost.isChild;
     let columnDataToAdd = newPost.columnDataToAdd;

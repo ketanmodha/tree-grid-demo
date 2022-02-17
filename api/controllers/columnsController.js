@@ -9,6 +9,7 @@ const getColumns = () => {
     return new Promise((resolve, reject) => {
         try {
             const columnsDb = dbJson.getColumns();
+            columnsDb?.sort((a, b) => (a.sequence > b.sequence ? 1 : -1))
             resolve(columnsDb);
         } catch (error) {
             reject(error);
@@ -25,7 +26,7 @@ const getColumn = (id) => {
     })
 }
 
-const columnHalValidInsetData = (data) => {
+const validateColumnData = (data) => {
     const columns = ["title", "dataType", "defaultValue", "alignment", "backgroundColor", "textColor", "fontSize", "isSorted", "sortDirection", "isHidden", "isFreezed"];
 
     const columnCount = Object.keys(data).length;
@@ -34,8 +35,7 @@ const columnHalValidInsetData = (data) => {
 
     if (hasAllKeys === false) {
         return { valid: false, message: "Missing column fields" };
-    }
-    else if (columnCount != columns.length) {
+    } else if (columnCount != columns.length) {
         return { valid: false, message: "Column fields count does not match" };
     } else {
         if (!helper.dataTypes.includes(data.dataType)) {
@@ -53,28 +53,42 @@ const columnHalValidInsetData = (data) => {
 const insertColumn = (newcolumn) => {
     return new Promise((resolve, reject) => {
 
-        const checkData = columnHalValidInsetData(newcolumn);
+        const checkData = validateColumnData(newcolumn);
 
         if (checkData.valid === false) {
             reject({ message: checkData.message });
         } else {
 
             let columnsDb = dbJson.getColumns();
-            const dateCreateUpdate = {
+            let postsDb = dbJson.getPosts();
+
+            const newColumnId = uuidv4();
+            const defaultValue = newcolumn.defaultValue;
+
+            newcolumn = {
+                id: newColumnId,
+                ...newcolumn,
+                sequence: 99,
                 createdAt: helper.getNewDate(),
                 updatedAt: helper.getNewDate(),
-            }
-            newcolumn = {
-                id: uuidv4(),
-                ...newcolumn,
-                ...dateCreateUpdate
             };
             columnsDb.push(newcolumn);
 
-            // TODO - Add new columns default data to posts
+            postsDb = postsDb.map(post => {
+                let newPost = {
+                    ...post,
+                    [`${newColumnId}`]: defaultValue,
+                    childrens: post.childrens ? [...post.childrens] : [],
+                    updatedAt: helper.getNewDate()
+                }
+
+                newPost.childrens = insertChildrens(post.childrens, newColumnId, defaultValue);
+                return newPost;
+            });
 
             try {
                 dbJson.writeData("COLUMNS", columnsDb);
+                dbJson.writeData("POSTS", postsDb);
                 resolve(newcolumn);
             } catch (error) {
                 reject(error);
@@ -83,8 +97,26 @@ const insertColumn = (newcolumn) => {
     })
 }
 
-const parseDataToDIfferentFormat = (value, newDataType, prevDataType, defaultValue) => {
+// Insert childerns
+const insertChildrens = (childrens, id, defaultValue) => {
+    if (childrens) {
+        childrens = childrens.map(post => {
+            let newPost = {
+                ...post,
+                [`${id}`]: defaultValue,
+                childrens: post.childrens ? [...post.childrens] : [],
+                updatedAt: helper.getNewDate()
+            }
 
+            newPost.childrens = insertChildrens(post.childrens, id, defaultValue);
+            return newPost;
+        })
+    }
+    return childrens;
+};
+
+// Update data when data type is changed
+const parseDataToDIfferentFormat = (value, newDataType, prevDataType, defaultValue) => {
     if (newDataType == 'TEXT') {
         return String(value);
     } else if (newDataType == 'NUMBER') {
@@ -113,7 +145,7 @@ const updateColumn = (id, newcolumn) => {
         helper.mustBeInArray(columnsDb, id)
             .then(post => {
 
-                const checkData = columnHalValidInsetData(newcolumn);
+                const checkData = validateColumnData(newcolumn);
 
                 if (checkData.valid === false) {
                     reject({ message: checkData.message });
@@ -192,9 +224,10 @@ const deleteColumn = (id) => {
             .then(() => {
                 columnsDb = columnsDb.filter(p => p.id !== id);
 
-                postsDb.map(item => {
-                    delete item[id];
-                    return item;
+                postsDb.map(post => {
+                    delete post[id];
+                    post.childrens = deleteChildrens(post.childrens, id);
+                    return post;
                 })
 
                 try {
@@ -208,6 +241,18 @@ const deleteColumn = (id) => {
             .catch(err => reject(err));
     })
 }
+
+// Delete childerns
+const deleteChildrens = (childrens, id) => {
+    if (childrens) {
+        childrens = childrens.map(post => {
+            delete post[id];
+            post.childrens = deleteChildrens(post.childrens, id);
+            return post;
+        })
+    }
+    return childrens;
+};
 
 const visibleColumns = (columnsVisible) => {
     return new Promise((resolve, reject) => {
