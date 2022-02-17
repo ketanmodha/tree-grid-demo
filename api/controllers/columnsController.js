@@ -71,6 +71,8 @@ const insertColumn = (newcolumn) => {
             };
             columnsDb.push(newcolumn);
 
+            // TODO - Add new columns default data to posts
+
             try {
                 dbJson.writeData("COLUMNS", columnsDb);
                 resolve(newcolumn);

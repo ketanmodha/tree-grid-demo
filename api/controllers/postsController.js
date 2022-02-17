@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const dbJson = require('../data');
 const helper = require('../utils/helper.js');
 
-function getPosts() {
+const getPosts = () => {
     return new Promise((resolve, reject) => {
         try {
             const postsDb = dbJson.getPosts();
@@ -15,7 +15,7 @@ function getPosts() {
     });
 }
 
-function getPost(id) {
+const getPost = (id) => {
     return new Promise((resolve, reject) => {
         let postsDb = dbJson.getPosts();
         helper.mustBeInArray(postsDb, id)
@@ -24,12 +24,12 @@ function getPost(id) {
     })
 }
 
-function insertPost(newPost) {
+const insertPost = (newPost) => {
 
     const refColumnId = newPost.refColumnId;
     const isChild = newPost.isChild;
     let columnDataToAdd = newPost.columnDataToAdd;
-    
+
     return new Promise((resolve, reject) => {
         let postsDb = dbJson.getPosts();
 
@@ -82,7 +82,7 @@ function insertPost(newPost) {
     })
 }
 
-function updatePost(id, updateData) {
+const updatePost = (id, updateData) => {
     return new Promise((resolve, reject) => {
         let postsDb = dbJson.getPosts();
         postsDb = postsDb.map(post => {
@@ -112,7 +112,7 @@ function updatePost(id, updateData) {
     })
 }
 
-function deletePosts(postIds) {
+const deletePosts = (postIds) => {
     return new Promise((resolve, reject) => {
         let postsDb = dbJson.getPosts();
         postsDb = postsDb.filter(p => {
