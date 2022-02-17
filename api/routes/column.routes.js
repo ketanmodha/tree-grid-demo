@@ -76,7 +76,6 @@ router.delete('/:id', async (req, res) => {
         });
 })
 
-
 /* Choose column visibility/hidden */
 /**
  * body :
@@ -91,7 +90,6 @@ router.delete('/:id', async (req, res) => {
  *     }
  * ]
  */
-
 router.post('/visibility', async (req, res) => {
 
     await columnsController.visibleColumns(req.body)
@@ -144,12 +142,35 @@ router.post('/freeze', async (req, res) => {
  *     }
  * ]
  */
-
-router.post('/sorting', async (req, res) => {
+ router.post('/sorting', async (req, res) => {
 
     await columnsController.sortingColumns(req.body)
         .then(() => res.json({
             message: `The column sorting has been updated`,
+        }))
+        .catch(err => {
+            if (err.status) {
+                return res.status(err.status).json({ message: err.message });
+            }
+            return res.status(500).json({ message: err.message });
+        });
+})
+
+/* Column Re-Ordering */
+/**
+ * body : Ids of all column in updated order - In Sequence
+ * [
+ *     "796f1f4f-8683-4dc9-8de8-9fbe5adc4f82", ---- First column after re-order
+ *     "796f1f4f-8683-4dc9-8de8-9fbe5adc4f81", ---- Second column after re-order
+ *     "796f1f4f-8683-4dc9-8de8-9fbe5adc4f83", ---- So on
+ *     ....,
+ * ]
+ */
+router.post('/column-sequencing', async (req, res) => {
+
+    await columnsController.sequencingColumns(req.body)
+        .then(() => res.json({
+            message: `The column orders has been updated`,
         }))
         .catch(err => {
             if (err.status) {

@@ -210,19 +210,21 @@ const deleteColumn = (id) => {
 const visibleColumns = (columnsVisible) => {
     return new Promise((resolve, reject) => {
         let columnsDb = dbJson.getColumns();
-        if (columnsVisible.length > 0) {
+        if (columnsVisible.length == 0) {
+            reject({ message: "No columns given to set visibility" });
+        } else {
             columnsVisible.map(column => {
                 const columnFound = columnsDb.find(i => i.id === column.columnId);
                 columnFound.isHidden = column.isHidden;
                 columnFound.updatedAt = helper.getNewDate();
             })
-        }
 
-        try {
-            dbJson.writeData("COLUMNS", columnsDb);
-            resolve(true);
-        } catch (err) {
-            reject(err);
+            try {
+                dbJson.writeData("COLUMNS", columnsDb);
+                resolve(true);
+            } catch (err) {
+                reject(err);
+            }
         }
     })
 }
@@ -231,14 +233,18 @@ const freezeColumn = (column) => {
     return new Promise((resolve, reject) => {
         let columnsDb = dbJson.getColumns();
         const columnFound = columnsDb.find(i => i.id === column.columnId);
-        columnFound.isFreezed = column.freeze;
-        columnFound.updatedAt = helper.getNewDate();
+        if (!columnFound) {
+            reject({ message: "Column id does not found" });
+        } else {
+            columnFound.isFreezed = column.freeze;
+            columnFound.updatedAt = helper.getNewDate();
 
-        try {
-            dbJson.writeData("COLUMNS", columnsDb);
-            resolve(true);
-        } catch (err) {
-            reject(err);
+            try {
+                dbJson.writeData("COLUMNS", columnsDb);
+                resolve(true);
+            } catch (err) {
+                reject(err);
+            }
         }
     })
 }
@@ -246,20 +252,52 @@ const freezeColumn = (column) => {
 const sortingColumns = (columnsSorting) => {
     return new Promise((resolve, reject) => {
         let columnsDb = dbJson.getColumns();
-        if (columnsSorting.length > 0) {
+
+        if (columnsSorting.length == 0) {
+            reject({ message: "No columns given to sort" });
+        } else {
             columnsSorting.map(column => {
                 const columnFound = columnsDb.find(i => i.id === column.columnId);
                 columnFound.isSorted = column.isSorted;
                 columnFound.sortDirection = column.isSorted ? column.sortOrder : null;
                 columnFound.updatedAt = helper.getNewDate();
             })
-        }
 
-        try {
-            dbJson.writeData("COLUMNS", columnsDb);
-            resolve(true);
-        } catch (err) {
-            reject(err);
+            try {
+                dbJson.writeData("COLUMNS", columnsDb);
+                resolve(true);
+            } catch (err) {
+                reject(err);
+            }
+        }
+    })
+}
+
+const sequencingColumns = (columnIds) => {
+    return new Promise((resolve, reject) => {
+        let columnsDb = dbJson.getColumns();
+        if (columnIds.length == 0) {
+            reject({ message: "No columns given to set sequence/order" });
+        } else {
+            columnsDb.map(column => {
+                const columnIndex = columnIds.findIndex(id => id === column.id);
+
+                if (columnIndex >= 0) {
+                    column.sequence = columnIndex + 1;
+                    column.updatedAt = helper.getNewDate();
+                } else {
+                    column.sequence = 99;
+                    column.updatedAt = helper.getNewDate();
+                }
+                return column;
+            })
+
+            try {
+                dbJson.writeData("COLUMNS", columnsDb);
+                resolve(true);
+            } catch (err) {
+                reject(err);
+            }
         }
     })
 }
@@ -274,4 +312,5 @@ module.exports = {
     visibleColumns,
     freezeColumn,
     sortingColumns,
+    sequencingColumns,
 }
