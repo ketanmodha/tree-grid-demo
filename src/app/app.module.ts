@@ -15,7 +15,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { DropDownListAllModule } from '@syncfusion/ej2-angular-dropdowns';
 import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 import { DialogModule } from '@syncfusion/ej2-angular-popups';
-
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -35,7 +35,7 @@ import { DialogModule } from '@syncfusion/ej2-angular-popups';
     DropDownListAllModule,
     CheckBoxModule,
     DialogModule,
-
+    HttpClientModule,
   ],
   providers: [PageService,
     SortService,

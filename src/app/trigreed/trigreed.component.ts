@@ -48,6 +48,8 @@ import {
 import { CheckBoxComponent } from "@syncfusion/ej2-angular-buttons";
 import { DialogComponent } from "@syncfusion/ej2-angular-popups";
 import { Calendar } from "@syncfusion/ej2-calendars";
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 declare var $: any;
 
@@ -76,6 +78,9 @@ declare var $: any;
   ],
 })
 export class TrigreedComponent implements OnInit {
+  constructor(private http: HttpClient) {
+    console.log("Hello");
+  }
   public data: Object[];
   public sortSettings: SortSettingsModel;
   public pageSettings: PageSettingsModel;
@@ -201,47 +206,21 @@ export class TrigreedComponent implements OnInit {
   public columnStyle: any = [];
 
   ngOnInit(): void {
+    console.log("ENvironment = ");
+    this.http.get<any>(environment.apiUrl+'columns').subscribe(data => {
+      this.columns = data; 
+    });
+
     this.treeGridobject.singleRowSelection = [];
-    this.data = sampleData;
+
+    this.http.get<any>(environment.apiUrl+'posts').subscribe(data => {
+      console.log("Data = ", data);
+      this.data = data;
+    });
+    // this.data = sampleData;
 
     // custom attribut for css
     this.customAttributes = { class: "customcss" };
-
-    // all columns
-    this.columns = [
-      {
-        field: "taskID",
-        headerText: "Task Id",
-        type: "number",
-        visble: true,
-        width: 300,
-        minWidth: 100,
-        maxWidth: 300,
-        isFrozen: true,
-        allowFiltering: false,
-      },
-      {
-        field: "taskName",
-        headerText: "Task Name",
-        type: "text",
-        visble: true,
-        isFrozen: true,
-      },
-      {
-        field: "startDate",
-        headerText: "Start Date",
-        visble: true,
-        type: "date",
-        format: "yMd",
-      },
-      {
-        field: "duration",
-        headerText: "Duration",
-        type: "number",
-        visble: true,
-      },
-    ];
-
 
     // toolbar option like column chooser
     // this.toolbarOption = ["ColumnChooser",];
